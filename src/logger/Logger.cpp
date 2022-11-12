@@ -7,7 +7,7 @@
 char socketPool[0x600000+0x20000] __attribute__((aligned(0x1000)));
 
 Logger& Logger::instance() { 
-    static Logger instance;
+    static Logger instance = {};
     return instance;
 }
 
@@ -36,7 +36,10 @@ nn::Result Logger::init(const char *ip, u16 port) {
         return -1;
     }
 
-    nn::socket::InetAton(ip, &hostAddress);
+    if (!this->stringToIPAddress(ip, &hostAddress)) {
+        mState = LoggerState::UNAVAILABLE;
+        return -1;
+    }
 
     serverAddress.address = hostAddress;
     serverAddress.port = nn::socket::InetHtons(port);
@@ -80,4 +83,24 @@ void Logger::log(const char *fmt, va_list args) {
     if(nn::util::VSNPrintf(buffer, sizeof(buffer), fmt, args) > 0) {
         nn::socket::Send(instance().mSocketFd, buffer, strlen(buffer), 0);
     }
+}
+
+bool Logger::stringToIPAddress(const char* str, in_addr* out) {
+    // string to IPv4
+    if (nn::socket::InetAton(str, out)) {
+        return true;
+    }
+
+    // get IPs via DNS
+    struct hostent *he = nn::socket::GetHostByName(str);
+    if (! he) { return false; }
+
+    // might give us multiple IP addresses, so pick the first one
+    struct in_addr **addr_list = (struct in_addr **) he->h_addr_list;
+    for (int i = 0 ; addr_list[i] != NULL ; i++) {
+        *out = *addr_list[i];
+        return true;
+    }
+
+    return false;
 }

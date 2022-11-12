@@ -17,6 +17,7 @@ class TextureInfo;
 }
 
 class PlayerActorHakoniwa;
+class CapMessageEnableChecker;
 
 namespace al {
 
@@ -35,7 +36,7 @@ class PlacementInfo;
 
 // from Starlight's header files. TODO clean this up, and include them in the proper places
 
-PlayerActorHakoniwa* getPlayerActor(al::LiveActor const*, int);
+
 
 PlayerActorHakoniwa* tryGetPlayerActor(al::PlayerHolder const*, int);
 
@@ -44,10 +45,6 @@ sead::Heap* getCurrentHeap();
 int getSubActorNum(al::LiveActor const*);
 
 al::LiveActor* getSubActor(al::LiveActor const*, int);
-
-sead::Vector3f* getVelocity(al::LiveActor const*);
-
-sead::Quatf* getQuat(al::LiveActor const*);
 
 int getPlayerControllerPort(int);
 
@@ -124,10 +121,6 @@ float squareIn(float value);
 
 al::AreaObj* tryFindAreaObj(al::LiveActor const*, const char*);
 
-bool tryGetAreaObjArg(int*, al::AreaObj const*, const char*);
-bool tryGetAreaObjArg(float*, al::AreaObj const*, const char*);
-bool tryGetAreaObjArg(bool*, al::AreaObj const*, const char*);
-
 bool tryGetAreaObjStringArg(const char**, al::AreaObj const*, const char*);
 
 bool tryGetArg(int*, const al::ActorInitInfo&, const char*);
@@ -167,10 +160,54 @@ void showModelIfHide(al::LiveActor*);
 void hideModel(al::LiveActor*);
 void showModel(al::LiveActor*);
 
+void showMaterial(al::LiveActor*, const char*);
+void hideMaterial(al::LiveActor*, const char*);
+
+bool isMsgPlayerFloorTouch(al::SensorMsg const*);
+
+void initActorSceneInfo(al::LiveActor*, al::ActorInitInfo const&);
+void initStageSwitch(al::LiveActor*, al::ActorInitInfo const&);
+void initExecutorWatchObj(al::LiveActor*, al::ActorInitInfo const&);
+int calcLinkChildNum(al::ActorInitInfo const&, const char*);
+void initLinksActor(al::LiveActor*, al::ActorInitInfo const&, const char*, int);
+void tryAddDisplayOffset(al::LiveActor*, al::ActorInitInfo const&);
+
+void setHitSensorPosPtr(al::LiveActor*, const char*, sead::Vector3f const*);
+bool tryListenStageSwitchAppear(al::LiveActor*);
+bool tryListenStageSwitchKill(al::LiveActor*);
+al::CameraTicket* initObjectCamera(al::LiveActor*, al::ActorInitInfo const&, char const*, char const*);
+
+bool isActiveCamera(al::CameraTicket const*);
+void startCamera(al::IUseCamera const*, al::CameraTicket*, int);
+void endCamera(al::IUseCamera const*, al::CameraTicket*, int, bool);
+void onStageSwitch(al::IUseStageSwitch*, char const*);
+
+int getActionFrameMax(al::LiveActor*);
+void requestStopCameraVerticalAbsorb(al::IUseCamera*);
+sead::Vector3f getPlayerPos(al::LiveActor const*, int);
+
 }  // namespace al
 
 namespace rs {
 uint32_t getStageShineAnimFrame(const al::LiveActor*, const char*);
+
+CapTargetInfo* createCapTargetInfo(al::LiveActor*, const char*);
+void createCapMessageEnableChecker(CapMessageEnableChecker**, al::LiveActor*, al::ActorInitInfo const&);
+bool tryReceiveMsgInitCapTargetAndSetCapTargetInfo(al::SensorMsg const*, CapTargetInfo const*);
+IUsePlayerPuppet* startPuppet(al::HitSensor*, al::HitSensor*);
+void setPuppetVelocity(IUsePlayerPuppet*, sead::Vector3f const&);
+bool tryReceiveBindCancelMsgAndPuppetNull(IUsePlayerPuppet**, al::SensorMsg const*);
+bool tryCheckShowCapMsgCapCatapultLookFirst(al::IUseSceneObjHolder const*, CapMessageEnableChecker*);
+void startPuppetAction(IUsePlayerPuppet*, const char*);
+sead::Vector3f* getPuppetTrans(IUsePlayerPuppet*);
+void setPuppetTrans(IUsePlayerPuppet*, sead::Vector3f const&);
+void setPuppetQuat(IUsePlayerPuppet*, sead::Quatf const&);
+void forcePutOnPuppetCap(IUsePlayerPuppet*);
+void setPuppetFront(IUsePlayerPuppet*, sead::Vector3f const&);
+void calcPuppetUp(sead::Vector3f*, IUsePlayerPuppet const*);
+void setPuppetUp(IUsePlayerPuppet*, sead::Vector3f const&);
+void endBindAndPuppetNull(IUsePlayerPuppet**);
+
 
 PlayerActorHakoniwa* getPlayerActor(const al::Scene*);
 

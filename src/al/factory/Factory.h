@@ -2,7 +2,6 @@
 
 #include "types.h"
 #include "al/util.hpp"
-#include "logger.hpp"
 
 namespace al
 {
@@ -36,7 +35,7 @@ namespace al
             return nullptr;
         };
 
-    protected:
+    public:
         // 0x0 is vtable
         const char *factoryName;         // 0x8
         al::NameToCreator<T> *actorTable; // 0x10

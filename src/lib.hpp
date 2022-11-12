@@ -23,3 +23,5 @@
 #include "lib/util/typed_storage.hpp"
 
 #include "lib/hook.hpp"
+
+#include "sead/basis/seadNew.hpp"

@@ -21,6 +21,8 @@
 
 // vtable for LiveActor: 1C4EB58
 
+class ActorGravityKeeper;
+
 namespace al
 {
 
@@ -31,7 +33,11 @@ namespace al
     class Collider;
     class CollisionParts;
     class ModelKeeper;
-    class ShadowKeeper;
+    class ShadowKeeper {
+        public:
+        void* mUnk[2];
+        ActorGravityKeeper* mActorGravityKeeper;
+    };
     class ActorPrePassLightKeeper;
     class ActorOcclusionKeeper;
     class SubActorKeeper;
@@ -95,6 +101,10 @@ namespace al
         virtual void control();
 
         virtual void updateCollider();
+
+        ActorGravityKeeper* getGravityKeeper() {
+            return this->mShadowKeeper->mActorGravityKeeper;
+        }
 
         const char *mActorName;                                // 0x48
         al::ActorPoseKeeperBase *mPoseKeeper;                  // 0x50

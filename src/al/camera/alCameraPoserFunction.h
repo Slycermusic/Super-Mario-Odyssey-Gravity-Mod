@@ -19,8 +19,8 @@ namespace alCameraPoserFunction {
     void calcPreCameraDirH(sead::Vector3<float> *,al::CameraPoser const*);
     void calcPreLookDir(sead::Vector3<float> *,al::CameraPoser const*);
     void calcPreLookDirH(sead::Vector3<float> *,al::CameraPoser const*);
-    void calcPreCameraAngleH(al::CameraPoser const*);
-    void calcPreCameraAngleV(al::CameraPoser const*);
+    float calcPreCameraAngleH(al::CameraPoser const*);
+    float calcPreCameraAngleV(al::CameraPoser const*);
     void setLookAtPosToTarget(al::CameraPoser *);
     void calcTargetTrans(sead::Vector3<float> *,al::CameraPoser const*);
     void setLookAtPosToTargetAddOffset(al::CameraPoser *,sead::Vector3<float> const&);
@@ -113,7 +113,7 @@ namespace alCameraPoserFunction {
     void calcCameraRotateStick(sead::Vector2<float> *,al::CameraPoser const*);
     float calcCameraRotateStickH(al::CameraPoser const*);
     float calcCameraRotateStickV(al::CameraPoser const*);
-    void calcCameraRotateStickPower(al::CameraPoser const*);
+    float calcCameraRotateStickPower(al::CameraPoser const*);
     void tryCalcCameraSnapShotMoveStick(sead::Vector2<float>*, al::CameraPoser const*);
     
     void getViewIndex(al::CameraPoser const*);
@@ -147,20 +147,20 @@ namespace alCameraPoserFunction {
     void getSubTargetTurnRestartStep(al::CameraPoser const*);
     void getCameraVerticalAbsorbPosUp(al::CameraPoser const*);
     void getCameraVerticalAbsorbPosDown(al::CameraPoser const*);
-    void getCameraAngleH(al::CameraPoser const*);
-    void getCameraAngleV(al::CameraPoser const*);
-    void getOffset(al::CameraPoser const*);
+    float getCameraAngleH(al::CameraPoser const*);
+    float getCameraAngleV(al::CameraPoser const*);
+    float getOffset(al::CameraPoser const*);
     void getGyroFront(al::CameraPoser *);
-    void getGyroAngleV(al::CameraPoser *);
-    void getGyroAngleH(al::CameraPoser *);
+    float getGyroAngleV(al::CameraPoser *);
+    float getGyroAngleH(al::CameraPoser *);
     void getSnapShotRollDegree(al::CameraPoser const*);
     void getSnapShotLookAtOffset(al::CameraPoser const*);
     void getRequestTargetAngleV(al::CameraObjectRequestInfo const&);
-    void getRequestAngleSpeed(al::CameraObjectRequestInfo const&);
-    void getRequestAngleV(al::CameraObjectRequestInfo const&);
+    float getRequestAngleSpeed(al::CameraObjectRequestInfo const&);
+    float getRequestAngleV(al::CameraObjectRequestInfo const&);
     void getCameraRailPointObjId(al::CameraPoser const*,int);
-    void getStickSensitivityLevel(al::CameraPoser const*);
-    void getStickSensitivityScale(al::CameraPoser const*);
+    float getStickSensitivityLevel(al::CameraPoser const*);
+    float getStickSensitivityScale(al::CameraPoser const*);
     void getGyroSensitivityLevel(al::CameraPoser const*);
     void getGyroSensitivityScale(al::CameraPoser const*);
 

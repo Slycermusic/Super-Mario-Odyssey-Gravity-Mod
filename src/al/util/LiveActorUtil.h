@@ -1,15 +1,16 @@
 #pragma once
 
+#include "al/LiveActor/LiveActor.h"
+#include "al/area/AreaObj.h"
+#include "al/async/FunctorBase.h"
+#include "al/collision/Collider.h"
+#include "al/layout/LayoutActor.h"
+#include "al/layout/LayoutInitInfo.h"
+#include "game/Player/PlayerActorHakoniwa.h"
 #include <sead/math/seadMatrix.h>
 #include <sead/math/seadQuat.h>
 #include <sead/math/seadVector.h>
 #include <sead/prim/seadSafeString.h>
-#include "al/LiveActor/LiveActor.h"
-#include "al/async/FunctorBase.h"
-#include "al/collision/Collider.h"
-#include "game/Player/PlayerActorHakoniwa.h"
-#include "al/layout/LayoutActor.h"
-#include "al/layout/LayoutInitInfo.h"
 
 typedef unsigned int uint;
 
@@ -29,7 +30,7 @@ namespace al {
     void startAction(LiveActor*, char const*);
     void startAction(IUseLayoutAction*, const char *, const char *);
     void startFreezeActionEnd(IUseLayoutAction *,char const*,char const*);
-    void startHitReaction(LiveActor*, char const*);
+    void startHitReaction(LiveActor const*, char const*);
     void invalidateClipping(LiveActor *);
     void validateClipping(LiveActor *);
     void setNerveAtActionEnd(LiveActor*, const al::Nerve*);
@@ -123,7 +124,7 @@ namespace al {
 
     sead::Quatf* getQuatPtr(LiveActor *);
 
-    sead::Vector3f* getOnGroundNormal(const LiveActor *, uint);
+    sead::Vector3f& getOnGroundNormal(const LiveActor *, uint);
 
     void scaleVelocity(LiveActor*, float);
     void scaleVelocityDirection(LiveActor*, sead::Vector3f const &, float);
@@ -140,6 +141,7 @@ namespace al {
     void setVelocityY(LiveActor*, float);
     void setVelocityZ(LiveActor*, float);
     void setVelocityZero(LiveActor*);
+    void setGravity(const LiveActor*, const sead::Vector3f&);
     void setVelocityBlowAttackAndTurnToTarget(LiveActor *,
                                               sead::Vector3f const &, float,
                                               float);
@@ -170,6 +172,16 @@ namespace al {
     LiveActor* getSubActor(const LiveActor*, const char*); //NOTE: unknown return type
 
     bool listenStageSwitchOnAppear(IUseStageSwitch *, al::FunctorBase const &functor);
+
+    PlayerActorHakoniwa* getPlayerActor(al::LiveActor const*, int);
+
+    bool tryGetAreaObjArg(int*, al::AreaObj const*, const char*);
+    bool tryGetAreaObjArg(float*, al::AreaObj const*, const char*);
+    bool tryGetAreaObjArg(bool*, al::AreaObj const*, const char*);
+}
+
+namespace alPlayerFunction {
+    bool isPlayerActor(const al::LiveActor*);
 }
 
 namespace rs {

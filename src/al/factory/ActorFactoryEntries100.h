@@ -2,6 +2,8 @@
 
 #include "ActorFactory.h"
 
+#include "actors/FlipPanel.h"
+#include "actors/SuperSpinDriver.h"
 #include "game/Actors/Shine.h"
 
 namespace al
@@ -66,9 +68,17 @@ namespace al
     class WobbleMapParts;
 } // namespace al
 
+namespace ca {
+    template <typename T>
+    al::LiveActor* createCustomActor(const char* name) {
+        return new T(name);
+    }
+}
+
 static al::NameToCreator<al::createActor> actorEntries[] = {
     // CUSTOM ACTOR ENTRIES HERE
-    // {"ClassNameUsedInStageFiles", &usecreateactorfunctionhere<className>},
+    {"SuperSpinDriver", &ca::createCustomActor<SuperSpinDriver>},
+    {"FlipPanelObserver", &ca::createCustomActor<FlipPanelObserver>},
     // VANILLA ACTOR ENTRIES
     {"AchievementNpc", &al::createActorFunction<class AchievementNpc>},
     {"AirBubble", &al::createActorFunction<class AirBubble>},

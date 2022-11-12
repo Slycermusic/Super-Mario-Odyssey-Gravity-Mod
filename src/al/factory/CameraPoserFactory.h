@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Factory.h"
-#include "logger.hpp"
+#include "logger/Logger.hpp"
 
 namespace cc {
     template <class T>
@@ -27,13 +27,6 @@ namespace al {
                 this->actorTable = nullptr;
                 this->factoryCount = 0;
             };
-
-            // use this to log cameras being created by the camera poser factory
-            // virtual const char *convertName(char const *name) const override
-            // {
-            //     Logger::log("Creating Camera: %s\n", name);
-            //     return name;
-            // };
 
             virtual CameraPoser *createEntranceCameraPoser(void) const;
             // return new al::CameraPoserEntrance(スタート);

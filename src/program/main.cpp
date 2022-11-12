@@ -45,25 +45,22 @@ void graNoclipCode(al::LiveActor *player) {
 
     sead::Vector3f *playerPos = al::getTransPtr(player);
     sead::Vector3f *cameraPos = al::getCameraPos(player, 0);
-    sead::Vector2f *leftStick = al::getLeftStick(-1);
+    sead::Vector2f leftStick = al::getLeftStick(-1);
 
     // Its better to do this here because loading zones reset this.
     al::offCollide(player);
     al::setVelocityZero(player);
-
-    // Mario slightly goes down even when velocity is 0. This is a hacky fix for that.
-    playerPos->y += 1.4553f;
 
     float d = sqrt(al::powerIn(playerPos->x - cameraPos->x, 2) + (al::powerIn(playerPos->z - cameraPos->z, 2)));
     float vx = ((speed + speedGain)/d)*(playerPos->x - cameraPos->x);
     float vz = ((speed + speedGain)/d)*(playerPos->z - cameraPos->z);
 
     if (!al::isPadHoldZR(-1)) {
-        playerPos->x -= leftStick->x * vz;
-        playerPos->z += leftStick->x * vx;
+        playerPos->x -= leftStick.x * vz;
+        playerPos->z += leftStick.x * vx;
 
-        playerPos->x += leftStick->y * vx;
-        playerPos->z += leftStick->y * vz;
+        playerPos->x += leftStick.y * vx;
+        playerPos->z += leftStick.y * vz;
 
         if (al::isPadHoldX(-1)) speedGain -= 0.5f;
         if (al::isPadHoldY(-1)) speedGain += 0.5f;
@@ -76,6 +73,7 @@ void graNoclipCode(al::LiveActor *player) {
 }
 
 void controlLol(StageScene* scene) {
+    //Logger::log("Heap Size: %d\n", sead::HeapMgr::instance()->getCurrentHeap()->getFreeSize());
     auto actor = rs::getPlayerActor(scene);
 
     static bool isNoclip = false;
@@ -85,6 +83,9 @@ void controlLol(StageScene* scene) {
 
         if(!isNoclip) {
             al::onCollide(actor);
+            actor->endDemoPuppetable();
+        } else {
+            actor->startDemoPuppetable();
         }
     }
 
@@ -145,7 +146,7 @@ HOOK_DEFINE_TRAMPOLINE(RedirectFileDevice) {
         sead::FixedSafeString<32> driveName;
         sead::FileDevice* device;
 
-        Logger::log("Path: %s\n", path.cstr());
+        //Logger::log("Path: %s\n", path.cstr());
 
         if (!sead::Path::getDriveName(&driveName, path))
         {
@@ -183,7 +184,7 @@ HOOK_DEFINE_TRAMPOLINE(RedirectFileDevice) {
 HOOK_DEFINE_TRAMPOLINE(FileLoaderLoadArc) {
     static sead::ArchiveRes *Callback(al::FileLoader *thisPtr, sead::SafeString &path, const char *ext, sead::FileDevice *device) {
 
-        Logger::log("Path: %s\n", path.cstr());
+        //Logger::log("Path: %s\n", path.cstr());
 
         sead::FileDevice* sdFileDevice = sead::FileDeviceMgr::instance()->findDevice("sd");
 
@@ -234,6 +235,7 @@ HOOK_DEFINE_TRAMPOLINE(GameSystemInit) {
         gTextWriter->setupGraphics(context);
 
         gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, 0.8f);
+        gTextWriter->beginDraw();
 
         Orig(thisPtr);
 
@@ -244,15 +246,19 @@ HOOK_DEFINE_TRAMPOLINE(DrawDebugMenu) {
     static void Callback(HakoniwaSequence *thisPtr) { 
 
         Orig(thisPtr);
+        gTextWriter->endDraw();
         
         gTextWriter->beginDraw();
 
         gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, 10.f));
         gTextWriter->printf("FPS: %d\n", static_cast<int>(round(Application::instance()->mFramework->calcFps())));
 
-        gTextWriter->endDraw();
     }
 };
+
+void gravityPatches();
+void actorPatches();
+void cameraPatches();
 
 extern "C" void exl_main(void* x0, void* x1) {
     /* Setup hooking enviroment. */
@@ -282,6 +288,9 @@ extern "C" void exl_main(void* x0, void* x1) {
 
     ControlHook::InstallAtSymbol("_ZN10StageScene7controlEv");
 
+    gravityPatches();
+    actorPatches();
+    cameraPatches();
 }
 
 extern "C" NORETURN void exl_exception_entry() {

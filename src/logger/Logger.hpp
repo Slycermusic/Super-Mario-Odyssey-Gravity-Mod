@@ -20,6 +20,7 @@ class Logger {
 
         static void log(const char *fmt, ...);
         static void log(const char *fmt, va_list args);
+        static bool stringToIPAddress(const char* str, struct in_addr* out);
 
     private:
         LoggerState mState;

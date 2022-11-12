@@ -2,4 +2,4 @@
 
 #include "lib.hpp"
 
-void runCodePatches(); 
+void runCodePatches();

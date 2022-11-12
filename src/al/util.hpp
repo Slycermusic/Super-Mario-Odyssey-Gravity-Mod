@@ -3,7 +3,7 @@
 #include "al/scene/ISceneObj.h"
 #include "al/scene/SceneObjHolder.h"
 #include "al/util/AudioUtil.h"
-#include "al/util/ControllerUtil.h"
+#include "al/util/InputUtil.h"
 #include "al/util/GraphicsUtil.h"
 #include "al/util/LayoutUtil.h"
 #include "al/util/LiveActorUtil.h"
@@ -67,10 +67,6 @@ namespace al
 
     al::PlayerHolder *getScenePlayerHolder(al::Scene const *);
 
-    PlayerActorBase *getPlayerActor(al::LiveActor const *, int);
-
-    PlayerActorBase *tryGetPlayerActor(al::PlayerHolder const *, int);
-
     sead::Heap *getCurrentHeap(void);
 
     al::Projection *getProjection(al::IUseCamera const *, int);
@@ -85,8 +81,6 @@ namespace al
     int getPlayerControllerPort(int);
 
     char const *getActionName(al::LiveActor const *);
-
-    char const *getActionFrame(al::LiveActor const *);
 
     bool isSklAnimExist(al::LiveActor const *, const char *);
     bool clearSklAnimInterpole(al::LiveActor *);
@@ -450,12 +444,6 @@ namespace al
     bool isInAreaObj(al::LiveActor const *, const char *);
 
     al::AreaObj *tryFindAreaObj(al::LiveActor const *, const char *);
-
-    void tryGetAreaObjArg(int *, al::AreaObj const *, const char *);
-    void tryGetAreaObjArg(float *, al::AreaObj const *, const char *);
-    void tryGetAreaObjArg(bool *, al::AreaObj const *, const char *);
-
-    void tryGetAreaObjStringArg(const char **, al::AreaObj const *, const char *);
 
     void offCollide(al::LiveActor *);
     void onCollide(al::LiveActor *);
