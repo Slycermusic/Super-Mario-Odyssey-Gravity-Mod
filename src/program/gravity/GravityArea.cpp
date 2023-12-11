@@ -22,6 +22,7 @@ void GravityArea::init(al::AreaInitInfo const& info) {
     al::tryGetAreaObjArg(&isDisableEdges, this, "IsDisableEdges");
     al::tryGetAreaObjArg(&mEdgeType, this, "EdgeType");
     al::tryGetAreaObjArg(&mValidSurfaces, this, "ValidSurfaces");
+    
 }
 
 void GravityArea::calcRotatedGravity(sead::Vector3f& result) {

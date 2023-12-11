@@ -17,6 +17,7 @@ public:
     void calcSegmentGravity(sead::Vector3f& result, const al::LiveActor* actor);
     void calcParallelGravity(sead::Vector3f& result, const al::LiveActor* actor);
     void calcConeGravity(sead::Vector3f& result, const al::LiveActor* actor);
+    void calcCylinderGravity(sead::Vector3f& result, const al::LiveActor* actor);
 
     float mRadius = 0.0f;
     float mHeight = 0.0f;

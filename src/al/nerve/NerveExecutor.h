@@ -1,21 +1,24 @@
 #pragma once
 
-#include "Nerve.h"
-#include "NerveKeeper.h"
+#include <basis/seadTypes.h>
+#include "al/hio/HioNode.h"
+#include "al/nerve/Nerve.h"
 
-namespace al
-{
-    class NerveExecutor : public IUseNerve
-    {
-    public:
-        NerveExecutor(const char *);
+namespace al {
+class Nerve;
+class NerveKeeper;
 
-        virtual NerveKeeper* getNerveKeeper() const;
-        virtual ~NerveExecutor();
+class NerveExecutor : public IUseNerve, public HioNode {
+public:
+    NerveExecutor(const char* name);
 
-        void initNerve(const al::Nerve *, int stateCount);
-        void updateNerve();
+    virtual NerveKeeper* getNerveKeeper() const;
+    virtual ~NerveExecutor();
 
-        al::NerveKeeper* mKeeper; // _8
-    };
+    void initNerve(const Nerve* nerve, s32 stateCount);
+    void updateNerve();
+
+private:
+    NerveKeeper* mKeeper = nullptr;
 };
+};  // namespace al

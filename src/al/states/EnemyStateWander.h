@@ -27,7 +27,7 @@ public:
 };
 
 namespace {
-NERVE_HEADER(EnemyStateWander, Wait)
-NERVE_HEADER(EnemyStateWander, Walk)
-NERVE_HEADER(EnemyStateWander, Fall)
+NERVE_IMPL(EnemyStateWander, Wait)
+NERVE_IMPL(EnemyStateWander, Walk)
+NERVE_IMPL(EnemyStateWander, Fall)
 }  // namespace

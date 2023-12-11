@@ -6,6 +6,7 @@
 #include "al/util/LiveActorUtil.h"
 #include "al/util/MathUtil.h"
 #include "al/util/NerveUtil.h"
+#include "al/util/NerveSetupUtil.h"
 #include "al/util/OtherUtil.h"
 #include "al/util/PlacementUtil.h"
 #include "al/util/SensorUtil.h"
@@ -18,13 +19,37 @@
 #include <cmath>
 #include <math.h>
 
+namespace {
+    using namespace al;
+    NERVE_IMPL(SuperSpinDriver, Wait)
+    NERVE_IMPL_(SuperSpinDriver, Trampled, Reaction)
+    NERVE_IMPL(SuperSpinDriver, Reaction)
+    NERVE_IMPL(SuperSpinDriver, ShootEnd)
+    NERVE_IMPL(SuperSpinDriver, LockedOn)
+    NERVE_IMPL(SuperSpinDriver, Pull)
+    NERVE_IMPL(SuperSpinDriver, Back)
+    NERVE_IMPL(SuperSpinDriver, Shoot)
+
+    struct {
+        NERVE_MAKE(SuperSpinDriver, Wait);
+        NERVE_MAKE(SuperSpinDriver, Trampled);
+        NERVE_MAKE(SuperSpinDriver, Reaction);
+        NERVE_MAKE(SuperSpinDriver, ShootEnd);
+        NERVE_MAKE(SuperSpinDriver, LockedOn);
+        NERVE_MAKE(SuperSpinDriver, Pull);
+        NERVE_MAKE(SuperSpinDriver, Back);
+        NERVE_MAKE(SuperSpinDriver, Shoot);
+    } nrvSuperSpinDriver;
+} 
+
+
 SuperSpinDriver::SuperSpinDriver(const char* name) : al::LiveActor(name) { }
 
 void SuperSpinDriver::init(al::ActorInitInfo const& initInfo) {
 
     al::initActorWithArchiveName(this, initInfo, "SuperSpinDriver", 0); // inits rail if we set link name to "Rail"
 
-    al::initNerve(this, &nrvSuperSpinDriverWait, 0);
+    al::initNerve(this, &nrvSuperSpinDriver.Wait, 0);
     al::tryAddDisplayOffset(this, initInfo);
 
     makeActorAlive();
@@ -45,6 +70,12 @@ void SuperSpinDriver::init(al::ActorInitInfo const& initInfo) {
     al::tryGetArg(&isUseObjCam, initInfo, "IsUseObjectCamera");
     if (isUseObjCam)
         mObjectCamera = al::initObjectCamera(this, initInfo, 0, 0);
+    
+    if (getRailRider()) {
+        //Logger::log("Rail Rider Initialized Sucessfully.\n");
+    }
+
+    al::rotateQuatYDirDegree(this, 10.0f);
 }
 
 void SuperSpinDriver::attackSensor(al::HitSensor *source,al::HitSensor *target) {
@@ -73,8 +104,8 @@ bool SuperSpinDriver::receiveMsg(al::SensorMsg const *msg,al::HitSensor *source,
 
             rs::requestHitReactionToAttacker(msg, source, target);
 
-            if (al::isNerve(this, &nrvSuperSpinDriverWait) || al::isNerve(this, &nrvSuperSpinDriverReaction) || al::isNerve(this, &nrvSuperSpinDriverTrampled)) {
-                al::setNerve(this, &nrvSuperSpinDriverTrampled);
+            if (al::isNerve(this, &nrvSuperSpinDriver.Wait) || al::isNerve(this, &nrvSuperSpinDriver.Reaction) || al::isNerve(this, &nrvSuperSpinDriver.Trampled)) {
+                al::setNerve(this, &nrvSuperSpinDriver.Trampled);
             }
             mReactionTimer = 0;
             return true;
@@ -86,9 +117,9 @@ bool SuperSpinDriver::receiveMsg(al::SensorMsg const *msg,al::HitSensor *source,
 
             rs::requestHitReactionToAttacker(msg, target, source);
 
-            if (al::isNerve(this, &nrvSuperSpinDriverWait) || al::isNerve(this, &nrvSuperSpinDriverReaction) || al::isNerve(this, &nrvSuperSpinDriverTrampled)) {
+            if (al::isNerve(this, &nrvSuperSpinDriver.Wait) || al::isNerve(this, &nrvSuperSpinDriver.Reaction) || al::isNerve(this, &nrvSuperSpinDriver.Trampled)) {
                 if (mReactionTimer >= 10) {
-                    al::setNerve(this, &nrvSuperSpinDriverReaction);
+                    al::setNerve(this, &nrvSuperSpinDriver.Reaction);
                     mReactionTimer = 0;
                 }
             }
@@ -98,28 +129,28 @@ bool SuperSpinDriver::receiveMsg(al::SensorMsg const *msg,al::HitSensor *source,
 
     if (rs::isMsgCapStartLockOn(msg)) {
 
-        Logger::log("Start Cap Lock On\n");
+        //Logger::log("Start Cap Lock On\n");
 
-        if (!al::isNerve(this, &nrvSuperSpinDriverLockedOn) &&
-            !al::isNerve(this, &nrvSuperSpinDriverPull) && !al::isNerve(this, &nrvSuperSpinDriverBack) &&
-            !al::isNerve(this, &nrvSuperSpinDriverShoot) && !al::isNerve(this, &nrvSuperSpinDriverShootEnd) && al::isNearPlayer(this, 2000.0f)) {
+        if (!al::isNerve(this, &nrvSuperSpinDriver.LockedOn) &&
+            !al::isNerve(this, &nrvSuperSpinDriver.Pull) && !al::isNerve(this, &nrvSuperSpinDriver.Back) &&
+            !al::isNerve(this, &nrvSuperSpinDriver.Shoot) && !al::isNerve(this, &nrvSuperSpinDriver.ShootEnd) && al::isNearPlayer(this, 2000.0f)) {
             al::invalidateClipping(this);
-            al::setNerve(this, &nrvSuperSpinDriverLockedOn);
+            al::setNerve(this, &nrvSuperSpinDriver.LockedOn);
             return true;
         }
         return false;
     }
     if (rs::isMsgCapKeepLockOn(msg) || rs::isMsgCapIgnoreCancelLockOn(msg)) {
-        Logger::log("Continue Cap Lock On\n");
-        return al::isNerve(this, &nrvSuperSpinDriverLockedOn);
+        //Logger::log("Continue Cap Lock On\n");
+        return al::isNerve(this, &nrvSuperSpinDriver.LockedOn);
     }
 
 
     if (rs::isMsgCapCancelLockOn(msg)) {
 
-        Logger::log("Cap Cancel Lock On\n");
+        //Logger::log("Cap Cancel Lock On\n");
 
-        if (!al::isNerve(this, &nrvSuperSpinDriverLockedOn))
+        if (!al::isNerve(this, &nrvSuperSpinDriver.LockedOn))
             return true;
 
         al::invalidateHitSensor(this, "Bind");
@@ -128,27 +159,27 @@ bool SuperSpinDriver::receiveMsg(al::SensorMsg const *msg,al::HitSensor *source,
         if (mObjectCamera && al::isActiveCamera(mObjectCamera))
             al::endCamera(this, mObjectCamera, -1, false);
 
-        al::setNerve(this, &nrvSuperSpinDriverWait);
+        al::setNerve(this, &nrvSuperSpinDriver.Wait);
         return true;
     }
 
     if (al::isMsgBindStart(msg)) {
-        Logger::log("Bind Start\n");
-        return al::isNerve(this, &nrvSuperSpinDriverLockedOn);
+        //Logger::log("Bind Start\n");
+        return al::isNerve(this, &nrvSuperSpinDriver.LockedOn);
     }
 
 
     if (al::isMsgBindInit(msg)) {
-        Logger::log("Bind Init\n");
+        //Logger::log("Bind Init\n");
         mPlayerPuppet = rs::startPuppet(target, source);
         rs::setPuppetVelocity(mPlayerPuppet, sead::Vector3f::zero);
 
-        al::setNerve(this, &nrvSuperSpinDriverPull);
+        al::setNerve(this, &nrvSuperSpinDriver.Pull);
         return true;
     }
 
     if (al::isMsgBindEnd(msg)) {
-        Logger::log("Bind End\n");
+        //Logger::log("Bind End\n");
         return true;
     }
 
@@ -156,12 +187,12 @@ bool SuperSpinDriver::receiveMsg(al::SensorMsg const *msg,al::HitSensor *source,
         al::invalidateHitSensor(this, "Bind");
         al::invalidateClipping(this);
 
-        Logger::log("Cancel Msg\n");
+        //Logger::log("Cancel Msg\n");
 
         if (mObjectCamera && al::isActiveCamera(mObjectCamera))
             al::endCamera(this, mObjectCamera, -1, false);
 
-        al::setNerve(this, &nrvSuperSpinDriverWait);
+        al::setNerve(this, &nrvSuperSpinDriver.Wait);
         return true;
     }
 
@@ -174,18 +205,18 @@ void SuperSpinDriver::control(void) {
 }
 
 bool SuperSpinDriver::isReactionable(void) const {
-    if (al::isNerve(this, &nrvSuperSpinDriverWait) || al::isNerve(this, &nrvSuperSpinDriverReaction))
+    if (al::isNerve(this, &nrvSuperSpinDriver.Wait) || al::isNerve(this, &nrvSuperSpinDriver.Reaction))
         return true;
     else
-        return al::isNerve(this, &nrvSuperSpinDriverTrampled);
+        return al::isNerve(this, &nrvSuperSpinDriver.Trampled);
 }
 
 bool SuperSpinDriver::isActive(void) const {
-    if (al::isNerve(this, &nrvSuperSpinDriverLockedOn) || al::isNerve(this, &nrvSuperSpinDriverPull) ||
-        al::isNerve(this, &nrvSuperSpinDriverBack))
+    if (al::isNerve(this, &nrvSuperSpinDriver.LockedOn) || al::isNerve(this, &nrvSuperSpinDriver.Pull) ||
+        al::isNerve(this, &nrvSuperSpinDriver.Back))
         return true;
     else
-        return al::isNerve(this, &nrvSuperSpinDriverShoot);
+        return al::isNerve(this, &nrvSuperSpinDriver.Shoot);
 }
 
 void SuperSpinDriver::resetAll(void) {
@@ -196,12 +227,12 @@ void SuperSpinDriver::resetAll(void) {
 }
 
 bool SuperSpinDriver::isEnableBind(void) const {
-    return al::isNerve(this, &nrvSuperSpinDriverLockedOn);
+    return al::isNerve(this, &nrvSuperSpinDriver.LockedOn);
 }
 
 void SuperSpinDriver::exeWait(void) {
     if (al::isFirstStep(this)) {
-        Logger::log("Start exeWait\n");
+        //Logger::log("Start exeWait\n");
         al::startAction(this, "Wait");
     }
 
@@ -210,21 +241,21 @@ void SuperSpinDriver::exeWait(void) {
 void SuperSpinDriver::exeReaction(void) {
     if (al::isFirstStep(this)) {
 
-        Logger::log("Start exeReaction\n");
+        //Logger::log("Start exeReaction\n");
 
-        if (al::isNerve(this, &nrvSuperSpinDriverTrampled))
+        if (al::isNerve(this, &nrvSuperSpinDriver.Trampled))
             al::startAction(this, "ReactionJump");
         else
             al::startAction(this, "Reaction");
     }
     if (al::isActionEnd(this))
-        al::setNerve(this, &nrvSuperSpinDriverWait);
+        al::setNerve(this, &nrvSuperSpinDriver.Wait);
 }
 
 void SuperSpinDriver::exeLockedOn(void) {
     if (al::isFirstStep(this)) {
 
-        Logger::log("Start exeLockedOn\n");
+        //Logger::log("Start exeLockedOn\n");
 
         al::validateHitSensor(this, "Bind");
         mHitSensorPos = al::getTrans(this);
@@ -239,13 +270,13 @@ void SuperSpinDriver::exeLockedOn(void) {
         al::invalidateClipping(this);
         if (mObjectCamera && al::isActiveCamera(mObjectCamera))
             al::endCamera(this, mObjectCamera, -1, false);
-        al::setNerve(this, &nrvSuperSpinDriverWait);
+        al::setNerve(this, &nrvSuperSpinDriver.Wait);
     }
 }
 
 void SuperSpinDriver::exePull(void) {
     if (al::isFirstStep(this)) {
-        Logger::log("Start exePull\n");
+        //Logger::log("Start exePull\n");
         al::startAction(this, "ShotStart");
         rs::startPuppetAction(mPlayerPuppet, "CatapultStart");
         al::invalidateHitSensor(this, "Bind");
@@ -271,12 +302,12 @@ void SuperSpinDriver::exePull(void) {
         rs::setPuppetQuat(mPlayerPuppet, newPupRot);
     }
     if (al::isActionEnd(this))
-        al::setNerve(this, &nrvSuperSpinDriverBack);
+        al::setNerve(this, &nrvSuperSpinDriver.Back);
 }
 
 void SuperSpinDriver::exeBack(void) {
     if (al::isFirstStep(this)) {
-        Logger::log("Start exeBack\n");
+        //Logger::log("Start exeBack\n");
         al::startAction(this, "Shot");
         rs::startPuppetAction(mPlayerPuppet, "SpinJumpLoop");
         rs::forcePutOnPuppetCap(mPlayerPuppet);
@@ -293,12 +324,12 @@ void SuperSpinDriver::exeBack(void) {
     rs::setPuppetTrans(mPlayerPuppet, jointPos);
 
     if (al::isGreaterEqualStep(this, 56))
-        al::setNerve(this, &nrvSuperSpinDriverShoot);
+        al::setNerve(this, &nrvSuperSpinDriver.Shoot);
 }
 
 void SuperSpinDriver::exeShoot(void) {
     if (al::isFirstStep(this)) {
-        Logger::log("Start exeShoot\n");
+        //Logger::log("Start exeShoot\n");
         al::requestStopCameraVerticalAbsorb(this);
     }
 
@@ -325,19 +356,19 @@ void SuperSpinDriver::exeShoot(void) {
 
             railRider->moveToRailStart();
             rs::endBindAndPuppetNull(&mPlayerPuppet);
-            al::setNerve(this, &nrvSuperSpinDriverShootEnd);
+            al::setNerve(this, &nrvSuperSpinDriver.ShootEnd);
 
         }
 
     } else {
         rs::endBindAndPuppetNull(&mPlayerPuppet);
-        al::setNerve(this, &nrvSuperSpinDriverShootEnd);
+        al::setNerve(this, &nrvSuperSpinDriver.ShootEnd);
     }
 }
 
 void SuperSpinDriver::exeShootEnd(void) {
     if (al::isFirstStep(this)) {
-        Logger::log("Start exeShootEnd\n");
+        //Logger::log("Start exeShootEnd\n");
         if (mObjectCamera)
             al::endCamera(this, mObjectCamera, -1, false);
     }
@@ -347,17 +378,6 @@ void SuperSpinDriver::exeShootEnd(void) {
 
     if (al::isGreaterEqualStep(this, 30)) {
         al::validateClipping(this);
-        al::setNerve(this, &nrvSuperSpinDriverWait);
+        al::setNerve(this, &nrvSuperSpinDriver.Wait);
     }
 }
-
-namespace {
-    NERVE_IMPL(SuperSpinDriver, Wait)
-    NERVE_IMPL_(SuperSpinDriver, Trampled, Reaction)
-    NERVE_IMPL(SuperSpinDriver, Reaction)
-    NERVE_IMPL(SuperSpinDriver, ShootEnd)
-    NERVE_IMPL(SuperSpinDriver, LockedOn)
-    NERVE_IMPL(SuperSpinDriver, Pull)
-    NERVE_IMPL(SuperSpinDriver, Back)
-    NERVE_IMPL(SuperSpinDriver, Shoot)
-}  // namespace

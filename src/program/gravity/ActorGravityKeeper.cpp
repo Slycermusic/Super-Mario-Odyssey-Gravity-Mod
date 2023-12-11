@@ -21,8 +21,9 @@ void ActorGravityKeeper::init() {
     al::AreaObjGroup* diskTorusGroup = this->mActor->getAreaObjDirector()->getAreaObjGroup("GravityDiskTorusArea");
     al::AreaObjGroup* coneGroup = this->mActor->getAreaObjDirector()->getAreaObjGroup("GravityConeArea");
     al::AreaObjGroup* segmentGroup = this->mActor->getAreaObjDirector()->getAreaObjGroup("GravitySegmentArea");
-    al::AreaObjGroup* gravityGroups[7] = {pointGroup, cubeGroup, parallelGroup, coneGroup, diskGroup, diskTorusGroup, segmentGroup};
-    for (int i = 0; i < 7; i++) {
+    al::AreaObjGroup* cylinderGroup = this->mActor->getAreaObjDirector()->getAreaObjGroup("GravityCylinderArea");
+    al::AreaObjGroup* gravityGroups[8] = {pointGroup, cubeGroup, parallelGroup, coneGroup, diskGroup, diskTorusGroup, segmentGroup, cylinderGroup};
+    for (int i = 0; i < 8; i++) {
         if (gravityGroups[i]) {
             for (int j = 0; j < gravityGroups[i]->mCurCount; j++) {
                 al::AreaObj* curArea = gravityGroups[i]->getAreaObj(j);
@@ -117,7 +118,15 @@ void ActorGravityKeeper::update() {
     }
     if (gravity != sead::Vector3f::zero) {
         gravity.normalize();
+        //Logger::log("Trying to log %p\n", actor->getName());
+        //if(actor->getName() != nullptr) {
+        //    Logger::log("%p, %s\n", actor->getName(), actor->getName());
+        //} else {
+        //    Logger::log("%p is nullptr\n", actor->getName());
+        //}
+        //if (actor->getName() != nullptr && al::isEqualString(actor->getName(), "クリボー")) {
         //Logger::log("Final gravity for %s (%s)\n\t%.02f %.02f %.02f\n\t%p %d\n", actor->getName(), typeid(*actor).name(), gravity.x, gravity.y, gravity.z, this->mAreas[0], isCalcGravity);
+        //}
         al::setGravity(actor, gravity);
     }
 }

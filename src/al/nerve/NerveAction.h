@@ -1,34 +1,17 @@
 #pragma once
 
-#include "Nerve.h"
+#include "al/nerve/Nerve.h"
+#include "al/nerve/NerveUtil.h"
 
-namespace al
-{
-    class NerveAction : public al::Nerve
-    {
-    public:
-        NerveAction();
+namespace al {
+class NerveAction : public Nerve {
+    friend class alNerveFunction::NerveActionCollector;
 
-        virtual const char* getActionName() const = 0;
+public:
+    NerveAction();
+    virtual const char* getActionName() const = 0;
 
-        al::NerveAction* _8;
-    };
+private:
+    NerveAction* mNextAction = nullptr;
 };
-
-namespace alNerveFunction
-{
-    class NerveActionCollector
-    {
-    public:
-        NerveActionCollector();
-
-        void addNerve(al::NerveAction *);
-
-        int mActionCount; // _0
-        int _4;
-        al::NerveAction* _8;
-        al::NerveAction* _10;
-
-        static alNerveFunction::NerveActionCollector* sCurrentCollector;
-    };
-};
+}  // namespace al

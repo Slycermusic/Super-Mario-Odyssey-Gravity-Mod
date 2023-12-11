@@ -8,7 +8,7 @@
 #include "al/scene/SceneObjHolder.h"
 #include "types.h"
 #include "UniqueObjInfo.h"
-
+#include "actors/PlayerHitPointData.h"
 #include "sead/math/seadVector.h"
 #include "sead/stream/seadStream.h"
 
@@ -207,7 +207,7 @@ class GameDataFile
         void getPlayerStartId(void);
         void getStageNameNext(void);
         void getStageNameCurrent(void);
-        void getPlayerHitPointData(void);
+        PlayerHitPointData* getPlayerHitPointData(void) const;
         void getLastUpdateTime(void);
         void getPlayTimeTotal(void);
         void getMainScenarioNo(int);

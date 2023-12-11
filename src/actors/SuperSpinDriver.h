@@ -42,14 +42,3 @@ private:
     int mReactionTimer = 10;                                 // 0x158
     float mLaunchSpeed = 36.0f;
 };
-
-namespace {
-NERVE_HEADER(SuperSpinDriver, Wait)
-NERVE_HEADER(SuperSpinDriver, Trampled)
-NERVE_HEADER(SuperSpinDriver, Reaction)
-NERVE_HEADER(SuperSpinDriver, ShootEnd)
-NERVE_HEADER(SuperSpinDriver, LockedOn)
-NERVE_HEADER(SuperSpinDriver, Pull)
-NERVE_HEADER(SuperSpinDriver, Back)
-NERVE_HEADER(SuperSpinDriver, Shoot)
-}  // namespace

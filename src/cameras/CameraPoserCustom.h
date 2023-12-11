@@ -28,7 +28,7 @@ namespace cc {
         float mAngleH = 0.0f;
         float mPrevH = 0.0f;
         float mPrevV = 0.0f;
-        float mDirSnapSpeed = 0.15f;
+        float mSnapSpeed = 0.15f;
         float mGroundSnapSpeed = 0.2f;
         int mGroundTimer = 0;
         bool mIsPrevTargetCollideGround = true;

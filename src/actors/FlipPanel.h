@@ -3,6 +3,7 @@
 #include "al/LiveActor/LiveActor.h"
 #include "al/util/LiveActorUtil.h"
 #include "al/util/NerveUtil.h"
+#include "al/util/NerveSetupUtil.h"
 #include "rs/util/SensorUtil.h"
 #include <sead/container/seadPtrArray.h>
 
@@ -24,12 +25,6 @@ private:
     int mPressTimer = 0;
 
 };
-namespace {
-    NERVE_HEADER(FlipPanel, Appear)
-    NERVE_HEADER(FlipPanel, Wait)
-    NERVE_HEADER(FlipPanel, Pressed)
-    NERVE_HEADER(FlipPanel, End)
-}
 
 class FlipPanelObserver : public al::LiveActor {
 public:
@@ -50,7 +45,3 @@ private:
     int mDelayStep = 10;
 
 };
-namespace {
-    NERVE_HEADER(FlipPanelObserver, Wait);
-    NERVE_HEADER(FlipPanelObserver, End);
-}

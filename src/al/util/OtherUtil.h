@@ -186,6 +186,8 @@ int getActionFrameMax(al::LiveActor*);
 void requestStopCameraVerticalAbsorb(al::IUseCamera*);
 sead::Vector3f getPlayerPos(al::LiveActor const*, int);
 
+void setShadowMaskDropLength(al::LiveActor*, float length, const char*);
+
 }  // namespace al
 
 namespace rs {
@@ -207,7 +209,6 @@ void setPuppetFront(IUsePlayerPuppet*, sead::Vector3f const&);
 void calcPuppetUp(sead::Vector3f*, IUsePlayerPuppet const*);
 void setPuppetUp(IUsePlayerPuppet*, sead::Vector3f const&);
 void endBindAndPuppetNull(IUsePlayerPuppet**);
-
 
 PlayerActorHakoniwa* getPlayerActor(const al::Scene*);
 

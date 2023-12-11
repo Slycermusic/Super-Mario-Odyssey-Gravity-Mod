@@ -9,6 +9,7 @@
 
 #include "al/util.hpp"
 #include "al/util/NerveUtil.h"
+#include "al/util/NerveSetupUtil.h"
 
 #include "game/UI/MenuSelectParts.h"
 
@@ -24,6 +25,7 @@ namespace al
     class KeyRepeatCtrl;
     class WipeSimple;
 } // namespace al
+
 
 class StageSceneStatePauseMenu : public al::HostStateBase<al::Scene> {
     public:
@@ -100,21 +102,7 @@ class StageSceneStatePauseMenu : public al::HostStateBase<al::Scene> {
 };
 
 namespace {
-    NERVE_HEADER(StageSceneStatePauseMenu, Appear)
-    NERVE_HEADER(StageSceneStatePauseMenu, Wait)
-    NERVE_HEADER(StageSceneStatePauseMenu, FadeBeforeHelp)
-    NERVE_HEADER(StageSceneStatePauseMenu, StartHelp)
-    NERVE_HEADER(StageSceneStatePauseMenu, WaitDraw)
-    NERVE_HEADER(StageSceneStatePauseMenu, End)
-    NERVE_HEADER(StageSceneStatePauseMenu, StartSeparatePlay)
-    NERVE_HEADER(StageSceneStatePauseMenu, EndSeparatePlay)
-    NERVE_HEADER(StageSceneStatePauseMenu, Option)
-    NERVE_HEADER(StageSceneStatePauseMenu, Save)
-    NERVE_HEADER(StageSceneStatePauseMenu, ConfirmNewGame)
-    NERVE_HEADER(StageSceneStatePauseMenu, NotExistEmptyFile)
-}
-
-namespace {
+    using namespace al;
     NERVE_IMPL(StageSceneStatePauseMenu, Appear)
     NERVE_IMPL(StageSceneStatePauseMenu, Wait)
     NERVE_IMPL(StageSceneStatePauseMenu, FadeBeforeHelp)
@@ -127,5 +115,19 @@ namespace {
     NERVE_IMPL(StageSceneStatePauseMenu, Save)
     NERVE_IMPL(StageSceneStatePauseMenu, ConfirmNewGame)
     NERVE_IMPL(StageSceneStatePauseMenu, NotExistEmptyFile)
-}
 
+    struct {
+        NERVE_MAKE(StageSceneStatePauseMenu, Appear);
+        NERVE_MAKE(StageSceneStatePauseMenu, Wait);
+        NERVE_MAKE(StageSceneStatePauseMenu, FadeBeforeHelp);
+        NERVE_MAKE(StageSceneStatePauseMenu, StartHelp);
+        NERVE_MAKE(StageSceneStatePauseMenu, WaitDraw);
+        NERVE_MAKE(StageSceneStatePauseMenu, End);
+        NERVE_MAKE(StageSceneStatePauseMenu, StartSeparatePlay);
+        NERVE_MAKE(StageSceneStatePauseMenu, EndSeparatePlay);
+        NERVE_MAKE(StageSceneStatePauseMenu, Option);
+        NERVE_MAKE(StageSceneStatePauseMenu, Save);
+        NERVE_MAKE(StageSceneStatePauseMenu, ConfirmNewGame);
+        NERVE_MAKE(StageSceneStatePauseMenu, NotExistEmptyFile);
+    } nrvStageSceneStatePauseMenu;
+}

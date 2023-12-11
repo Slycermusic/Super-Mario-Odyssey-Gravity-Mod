@@ -71,6 +71,9 @@ namespace al
         StageSwitchDirector *mStageSwitchDirector; // 0xF8
         ViewIdHolder *mViewIdHolder; // 0x100
     };
+
+    void initSubActorKeeperNoFile(LiveActor*, const ActorInitInfo&, s32);
+    void registerSubActorSyncClipping(LiveActor*, LiveActor*);
 };
 
 // size not entirely known, guessing based off of ActorInitInfo::initNew

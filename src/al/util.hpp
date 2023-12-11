@@ -181,6 +181,7 @@ namespace al
     void startVisAnim(al::LiveActor *, char const *);
     void startMtpAnim(al::LiveActor *, char const *);
     void startMclAnim(al::LiveActor *, char const *);
+    void setMclAnimFrameAndStop(al::LiveActor *, float);
 
     float getSklAnimBlendWeight(al::LiveActor const*,int);
     void setSklAnimBlendWeight(al::LiveActor *,float,int);

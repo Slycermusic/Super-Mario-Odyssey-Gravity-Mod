@@ -63,7 +63,5 @@ namespace rs
     void calcGroundNormalOrUpDir(sead::Vector3f *result, al::LiveActor const *actor, IUsePlayerCollision const *col);
 
     void calcPlayerFrontDir(sead::Vector3f* result, al::LiveActor const*);
-
-    PlayerActorBase *getPlayerActor(al::Scene const *);
     
 }

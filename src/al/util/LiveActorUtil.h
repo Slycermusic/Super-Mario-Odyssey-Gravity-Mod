@@ -69,6 +69,7 @@ namespace al {
     void initJointGlobalQuatController(const LiveActor*, const sead::Quatf*, const char*);
 
     void appearBreakModelRandomRotateY(LiveActor *);
+    void registActorToDemoInfo(al::LiveActor* actor, const al::ActorInitInfo& info);
 
     bool isNear(const LiveActor *, const LiveActor *, float);
     bool isClipped(const LiveActor*);
@@ -91,6 +92,7 @@ namespace al {
     bool isNearPlayer(const LiveActor*, float);
     bool isFallOrDamageCodeNextMove(const LiveActor *,  const sead::Vector3f &, float, float);
     bool isFaceToTargetDegreeH(const LiveActor*, const sead::Vector3f &, const sead::Vector3f &, float);
+    bool isExistModel(const al::LiveActor*);
 
     bool tryOnSwitchDeadOn(IUseStageSwitch *);
     bool trySyncStageSwitchAppear(LiveActor *);
@@ -163,7 +165,13 @@ namespace al {
 
     void makeQuatUpFront(sead::Quatf *, sead::Vector3f const &, sead::Vector3f const &);
 
+    void rotateQuatXDirDegree(LiveActor *, float);
     void rotateQuatYDirDegree(LiveActor *, float);
+    void rotateQuatZDirDegree(LiveActor *, float);
+
+    void addRotateAndRepeatX(LiveActor *, float);
+    void addRotateAndRepeatY(LiveActor *, float);
+    void addRotateAndRepeatZ(LiveActor *, float);
 
     f32* findActorParamF32(const LiveActor*, const char*);
 
