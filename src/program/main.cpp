@@ -28,6 +28,7 @@
 #include "game/System/GameSystem.h"
 #include "game/System/Application.h"
 #include "game/HakoniwaSequence/HakoniwaSequence.h"
+#include "qm.h"
 #include "rs/util.hpp"
 #include "al/util/OtherUtil.h"
 
@@ -137,7 +138,7 @@ HOOK_DEFINE_TRAMPOLINE(CreateFileDeviceMgr) {
         
         Orig(thisPtr);
 
-        thisPtr->mMountedSd = nn::fs::MountSdCardForDebug("sd").isSuccess();
+        thisPtr->mMountedSd = nn::fs::MountSdCardForDebug("sd");
 
         sead::NinSDFileDevice *sdFileDevice = new sead::NinSDFileDevice();
 
@@ -225,6 +226,10 @@ HOOK_DEFINE_TRAMPOLINE(GameSystemInit) {
         if (al::isExistFile(DBG_SHADER_PATH) && al::isExistFile(DBG_FONT_PATH) && al::isExistFile(DBG_TBL_PATH)) {
             sead::DebugFontMgrJis1Nvn::sInstance->initialize(curHeap, DBG_SHADER_PATH, DBG_FONT_PATH, DBG_TBL_PATH, 0x100000);
         }
+
+        // Create heap tree
+        #define HEAP_SIZE_MB(val) val * 1000000
+        qm::qmHeap = sead::ExpHeap::create(HEAP_SIZE_MB(2), "qmHeap", al::getStationedHeap(), 8, sead::Heap::HeapDirection::cHeapDirection_Forward, false);
 
         sead::TextWriter::setDefaultFont(sead::DebugFontMgrJis1Nvn::sInstance);
 
@@ -411,6 +416,8 @@ extern "C" void exl_main(void* x0, void* x1) {
     RailMoveMapPartsInitSpeedHook::InstallAtSymbol("_ZN2al16RailMoveMapParts4initERKNS_13ActorInitInfoE");
     RailMoveMapPartsControlRotationHook::InstallAtSymbol("_ZN2al16RailMoveMapParts7controlEv");
     initPlayerHook::InstallAtSymbol("_ZN19PlayerActorHakoniwa10initPlayerERKN2al13ActorInitInfoERK14PlayerInitInfo");
+
+    installQmSaveHooks();
 
     patch::CodePatcher p(0x4BD0C0);
     p.WriteInst(inst::Movz(reg::X0, 0x130));
