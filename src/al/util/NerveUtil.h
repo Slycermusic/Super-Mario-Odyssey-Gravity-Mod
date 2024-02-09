@@ -81,6 +81,8 @@ bool isStateEnd(const IUseNerve* user);
 void initNerve(LiveActor* actor, const Nerve* nerve, s32);
 }  // namespace al
 
+
+
 namespace alNerveFunction {
 void setNerveAction(al::IUseNerve* user, const char* action);
 

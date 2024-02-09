@@ -113,20 +113,12 @@ void ActorGravityKeeper::update() {
                 }
             }
         } else if (actor->mCollider && al::isOnGround(actor, 0)) {
-            gravity = -al::getOnGroundNormal(actor, 0);
+            gravity = *(al::getOnGroundNormal(actor, 0)) * -1;
         }
     }
     if (gravity != sead::Vector3f::zero) {
         gravity.normalize();
-        //Logger::log("Trying to log %p\n", actor->getName());
-        //if(actor->getName() != nullptr) {
-        //    Logger::log("%p, %s\n", actor->getName(), actor->getName());
-        //} else {
-        //    Logger::log("%p is nullptr\n", actor->getName());
-        //}
-        //if (actor->getName() != nullptr && al::isEqualString(actor->getName(), "クリボー")) {
-        //Logger::log("Final gravity for %s (%s)\n\t%.02f %.02f %.02f\n\t%p %d\n", actor->getName(), typeid(*actor).name(), gravity.x, gravity.y, gravity.z, this->mAreas[0], isCalcGravity);
-        //}
+
         al::setGravity(actor, gravity);
     }
 }

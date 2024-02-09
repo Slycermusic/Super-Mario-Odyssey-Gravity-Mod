@@ -122,7 +122,7 @@ namespace al
 
     // layout stuff
 
-    al::LayoutInitInfo *getLayoutInitInfo(al::ActorInitInfo const&);
+    al::LayoutInitInfo* getLayoutInitInfo(const al::ActorInitInfo& info);
 
     void requestCaptureRecursive(al::LayoutActor const*);
 

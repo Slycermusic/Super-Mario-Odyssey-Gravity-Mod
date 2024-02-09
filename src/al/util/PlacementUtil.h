@@ -14,6 +14,7 @@ namespace al
     void getPlacementInfoAndKeyNameByIndex(al::PlacementInfo *, const char **, const al::PlacementInfo &, int);
     void getPlacementId(al::PlacementId *, const al::ActorInitInfo &);
     void getPlacementId(al::PlacementId *, const al::PlacementInfo &);
+    const PlacementInfo& getPlacementInfo(const al::ActorInitInfo&);
 
     int getCountPlacementInfo(const al::PlacementInfo &);
 
@@ -32,7 +33,8 @@ namespace al
     bool isEqualPlacementId(const al::PlacementId &, const al::PlacementId &);
     bool isEqualPlacementId(const al::PlacementInfo &, const al::PlacementInfo &);
     bool isObjectName(const al::PlacementInfo &, const char *);
-
+    bool tryGetPlacementInfoByKey(al::PlacementInfo* out, const al::PlacementInfo&, const char* key);
+    
     al::StringTmp<0x80> makeStringPlacementId(al::PlacementId const *);
 
     void tryGetPlacementInfoAndCount(PlacementInfo *, int *, StageInfo const *, char const *);

@@ -109,7 +109,7 @@ namespace cc {
 
 
         float stickSpeed = alCameraPoserFunction::getStickSensitivityScale(this) *
-                        alCameraPoserFunction::getStickSensitivityLevel(this) * 2;
+                        alCameraPoserFunction::getStickSensitivityLevel(this) * 3;
 
         sead::Vector3f preLook;
         alCameraPoserFunction::calcPreLookDir(&preLook, this);

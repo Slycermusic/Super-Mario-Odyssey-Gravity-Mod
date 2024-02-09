@@ -316,6 +316,24 @@ HOOK_DEFINE_TRAMPOLINE(RailMoveMapPartsControlRotationHook) {
     }
 };
 
+//HOOK_DEFINE_TRAMPOLINE(MoonBasementFallObjexeFallGravityHook) {
+//    static void Callback(MoonBasementFallObj* actor, const al::ActorInitInfo& info, al::LiveActor* parent, char const* name) {
+//        Orig(actor, info, parent, name);
+//        bool invertedGravity = false;
+//        if(!al::tryGetArg(&invertedGravity, info, "InvertedGravity")) {
+//        invertedGravity = false;
+//        }
+//        *(((bool*) actor)+0x86C) = invertedGravity;
+//    }
+//};
+
+void moon(al::LiveActor* actor, float num){
+    bool invertedGravity = *(((bool*) actor)+0x86C);
+    if(invertedGravity) return;
+    al::addVelocityY(actor, num);
+}
+
+//71002bf86c
 HOOK_DEFINE_TRAMPOLINE(initPlayerHook) {
     static void Callback(PlayerActorHakoniwa* player, const al::ActorInitInfo& actorInfo, const PlayerInitInfo& playerInfo) {
         Orig(player, actorInfo, playerInfo);
@@ -327,6 +345,16 @@ HOOK_DEFINE_TRAMPOLINE(initPlayerHook) {
         }
     }
 };
+
+HOOK_DEFINE_TRAMPOLINE(InitializeStageSceneLayoutHook) {
+    static void Callback(StageSceneLayout* stageSceneLayout, const char* name, const al::LayoutInitInfo& initInfo, const al::PlayerHolder* playerHolder, const al::SubCameraRenderer* subCameraRenderer) {
+
+        StarPieceCounter* starPieceCounter = new StarPieceCounter("CrazeyCounter", initInfo);
+
+        Orig(stageSceneLayout, name, initInfo, playerHolder, subCameraRenderer);
+    }
+};
+
 //0x14B1FC
 
 //void BeeCostumeChangeIsInWater(StageScene* scene) {
@@ -423,7 +451,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     p.WriteInst(inst::Movz(reg::X0, 0x130));
     ControlHook::InstallAtSymbol("_ZN10StageScene7controlEv");
 
-    exl::patch::CodePatcher(0x4C8DD0).BranchLinkInst(reinterpret_cast<void*>(initActorInitInfo));
+    InitializeStageSceneLayoutHook::InstallAtSymbol("_ZN16StageSceneLayoutC2EPKcRKN2al14LayoutInitInfoEPKNS2_12PlayerHolderEPKNS2_17SubCameraRendererE");
     exl::patch::CodePatcher(0x17C8DC).BranchInst(reinterpret_cast<void*>(bomb));
 
     //Logger::instance().init("192.168.0.44", 3080);

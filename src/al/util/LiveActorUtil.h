@@ -126,7 +126,7 @@ namespace al {
 
     sead::Quatf* getQuatPtr(LiveActor *);
 
-    sead::Vector3f& getOnGroundNormal(const LiveActor *, uint);
+    sead::Vector3f* getOnGroundNormal(const LiveActor *, uint);
 
     void scaleVelocity(LiveActor*, float);
     void scaleVelocityDirection(LiveActor*, sead::Vector3f const &, float);

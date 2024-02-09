@@ -23,12 +23,12 @@ namespace cc {
         virtual void movement(void) override;
 
         float mOffsetY = 120.0f;
-        float mDist = 1600.0f;
+        float mDist = 1400.0f;
         float mAngleV = 0.0f;
         float mAngleH = 0.0f;
         float mPrevH = 0.0f;
         float mPrevV = 0.0f;
-        float mSnapSpeed = 0.15f;
+        float mSnapSpeed = 0.01f;
         float mGroundSnapSpeed = 0.2f;
         int mGroundTimer = 0;
         bool mIsPrevTargetCollideGround = true;

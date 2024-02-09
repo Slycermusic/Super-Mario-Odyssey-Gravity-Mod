@@ -1,51 +1,51 @@
-#include "actors/BombHei.h"
+#include "actors/MechanicKoopaMini.h"
 #include "al/util/NerveSetupUtil.h"
 
-BombHei *bombInstance;
+MechanicKoopaMini *koopaMiniInstance;
 
 namespace {
     using namespace al;
-    NERVE_IMPL(BombHei, Wait)
-    NERVE_IMPL(BombHei, Wander)
-    NERVE_IMPL(BombHei, Turn)
-    NERVE_IMPL(BombHei, Find)
-    NERVE_IMPL(BombHei, Chase)
-    NERVE_IMPL(BombHei, Fall)
-    NERVE_IMPL(BombHei, Land)
-    NERVE_IMPL(BombHei, Attack)
-    NERVE_IMPL(BombHei, CapHit)
-    NERVE_IMPL(BombHei, BlowDown)
-    NERVE_IMPL(BombHei, Explode)
+    NERVE_IMPL(MechanicKoopaMini, Wait)
+    NERVE_IMPL(MechanicKoopaMini, Wander)
+    NERVE_IMPL(MechanicKoopaMini, Turn)
+    NERVE_IMPL(MechanicKoopaMini, Find)
+    NERVE_IMPL(MechanicKoopaMini, Chase)
+    NERVE_IMPL(MechanicKoopaMini, Fall)
+    NERVE_IMPL(MechanicKoopaMini, Land)
+    NERVE_IMPL(MechanicKoopaMini, Attack)
+    NERVE_IMPL(MechanicKoopaMini, CapHit)
+    NERVE_IMPL(MechanicKoopaMini, BlowDown)
+    NERVE_IMPL(MechanicKoopaMini, Explode)
 
     struct {
-        NERVE_MAKE(BombHei, Wait);
-        NERVE_MAKE(BombHei, Wander);
-        NERVE_MAKE(BombHei, Turn);
-        NERVE_MAKE(BombHei, Find);
-        NERVE_MAKE(BombHei, Chase);
-        NERVE_MAKE(BombHei, Fall);
-        NERVE_MAKE(BombHei, Land);
-        NERVE_MAKE(BombHei, Attack);
-        NERVE_MAKE(BombHei, CapHit);
-        NERVE_MAKE(BombHei, BlowDown);
-        NERVE_MAKE(BombHei, Explode);
-    } nrvBombHei;
+        NERVE_MAKE(MechanicKoopaMini, Wait);
+        NERVE_MAKE(MechanicKoopaMini, Wander);
+        NERVE_MAKE(MechanicKoopaMini, Turn);
+        NERVE_MAKE(MechanicKoopaMini, Find);
+        NERVE_MAKE(MechanicKoopaMini, Chase);
+        NERVE_MAKE(MechanicKoopaMini, Fall);
+        NERVE_MAKE(MechanicKoopaMini, Land);
+        NERVE_MAKE(MechanicKoopaMini, Attack);
+        NERVE_MAKE(MechanicKoopaMini, CapHit);
+        NERVE_MAKE(MechanicKoopaMini, BlowDown);
+        NERVE_MAKE(MechanicKoopaMini, Explode);
+    } nrvMechanicKoopaMini;
 }
 
-BombHei::BombHei(const char *name) : al::LiveActor(name) { }
+MechanicKoopaMini::MechanicKoopaMini(const char *name) : al::LiveActor(name) { }
 
-typedef void (BombHei::*functorType)();
+typedef void (MechanicKoopaMini::*functorType)();
 
-void BombHei::init(al::ActorInitInfo const &info)
+void MechanicKoopaMini::init(al::ActorInitInfo const &info)
 {
-    al::initActorWithArchiveName(this, info, "BombHei", nullptr);
+    al::initActorWithArchiveName(this, info, "MechanicKoopaMini", nullptr);
 
     // if (al::isValidStageSwitch(this, "SwitchStart")) {
     //     gLogger->LOG("Valid.\n");
     //     al::initNerve(this, &nrvBombHeiWait, 1);
     // } else {
     //     gLogger->LOG("Invalid.\n");
-    al::initNerve(this, &nrvBombHei.Wander, 1);
+    al::initNerve(this, &nrvMechanicKoopaMini.Wander, 1);
     // }    
 
     this->forceKeeper = new ExternalForceKeeper();
@@ -67,14 +67,14 @@ void BombHei::init(al::ActorInitInfo const &info)
     al::invalidateHitSensor(this, "Explosion");
     al::invalidateHitSensor(this, "ExplosionToPlayer");
 
-    bombInstance = this; 
+    koopaMiniInstance = this; 
 }
 
-void BombHei::listenAppear() {
+void MechanicKoopaMini::listenAppear() {
     this->appear();
 }
 
-bool BombHei::receiveMsg(const al::SensorMsg* message, al::HitSensor* source,
+bool MechanicKoopaMini::receiveMsg(const al::SensorMsg* message, al::HitSensor* source,
                         al::HitSensor* target) {
     if(rs::isMsgTargetMarkerPosition(message)) {
         sead::Vector3f &transPtr = al::getTrans(this);
@@ -91,19 +91,11 @@ bool BombHei::receiveMsg(const al::SensorMsg* message, al::HitSensor* source,
         return true;
     }
 
-    if(rs::isMsgCapReflect(message) && !al::isNerve(this, &nrvBombHei.BlowDown) && this->capHitCooldown <= 0) {
+    if(rs::isMsgCapReflect(message) && !al::isNerve(this, &nrvMechanicKoopaMini.BlowDown) && this->capHitCooldown <= 0) {
         rs::requestHitReactionToAttacker(message, target, source);
-        al::setNerve(this, &nrvBombHei.CapHit);
+        al::setNerve(this, &nrvMechanicKoopaMini.CapHit);
         this->capPos = *al::getSensorPos(source);
         this->capHitCooldown = 10;
-        return true;
-    }
-
-    if((rs::isMsgBlowDown(message) || rs::isMsgDonsukeAttack(message)) && !al::isNerve(this, &nrvBombHei.BlowDown)) {
-        al::setVelocityBlowAttackAndTurnToTarget(this, *al::getActorTrans(source), 15.0f, 35.0f);
-        rs::setAppearItemFactorAndOffsetByMsg(this, message, source);
-        rs::requestHitReactionToAttacker(message, target, source);
-        al::setNerve(this, &nrvBombHei.BlowDown);
         return true;
     }
 
@@ -118,9 +110,9 @@ bool BombHei::receiveMsg(const al::SensorMsg* message, al::HitSensor* source,
     return false;
 }
 
-void BombHei::attackSensor(al::HitSensor* source, al::HitSensor* target) {
+void MechanicKoopaMini::attackSensor(al::HitSensor* source, al::HitSensor* target) {
 
-    if(al::isNerve(this, &nrvBombHei.Explode)) {
+    if(al::isNerve(this, &nrvMechanicKoopaMini.Explode)) {
         if(al::isSensorPlayer(source)) {
             if(al::isSensorName(target, "ExplosionToPlayer")) {
                 al::sendMsgExplosion(target, source, nullptr);
@@ -131,26 +123,26 @@ void BombHei::attackSensor(al::HitSensor* source, al::HitSensor* target) {
             }
         }
     }
-    else if (!al::isNerve(this, &nrvBombHei.BlowDown)) {
+    else if (!al::isNerve(this, &nrvMechanicKoopaMini.BlowDown)) {
         if (!al::sendMsgEnemyAttack(target, source)) {
             rs::sendMsgPushToPlayer(target, source);
 
-            if (al::isNerve(this, &nrvBombHei.BlowDown))
+            if (al::isNerve(this, &nrvMechanicKoopaMini.BlowDown))
                 return;
             
-            if (al::isNerve(this, &nrvBombHei.BlowDown) || al::isNerve(this, &nrvBombHei.Attack) ||
+            if (al::isNerve(this, &nrvMechanicKoopaMini.BlowDown) || al::isNerve(this, &nrvMechanicKoopaMini.Attack) ||
                  !al::sendMsgEnemyAttack(target, source)) {
                 al::sendMsgPushAndKillVelocityToTarget(this, source, target);
                 return;
             }
         }
-        al::setNerve(this, &nrvBombHei.Attack);
+        al::setNerve(this, &nrvMechanicKoopaMini.Attack);
     }
 }
 
 // todo: no idea what 0x144 or 0x124 are
 
-void BombHei::control() {
+void MechanicKoopaMini::control() {
     
     if (al::isInDeathArea(this) || al::isCollidedFloorCode(this, "DamageFire") ||
         al::isCollidedFloorCode(this, "Needle") || al::isCollidedFloorCode(this, "Poison") ||
@@ -183,7 +175,7 @@ void BombHei::control() {
             this->unkInt = prevInt;
 
             if (prevInt == 0) {
-                if(al::isNerve(this, &nrvBombHei.Wander)) {
+                if(al::isNerve(this, &nrvMechanicKoopaMini.Wander)) {
                     al::validateClipping(this);
                 }
             }
@@ -192,13 +184,13 @@ void BombHei::control() {
         if(this->explodeTimer > 0) {
             this->explodeTimer--;
             if(this->explodeTimer == 0) {
-                al::setNerve(this, &nrvBombHei.Explode);
+                al::setNerve(this, &nrvMechanicKoopaMini.Explode);
             }
         }
     }
 }
 
-void BombHei::updateCollider() {
+void MechanicKoopaMini::updateCollider() {
     sead::Vector3f& velocity = al::getVelocity(this);
 
     if (al::isNoCollide(this)) {
@@ -214,7 +206,7 @@ void BombHei::updateCollider() {
     }
 }
 
-void BombHei::updateVelocity() {
+void MechanicKoopaMini::updateVelocity() {
     if(al::isOnGround(this, 0)) {
         sead::Vector3f *groundNormal = al::getOnGroundNormal(this, 0);
         al::getVelocity(this);
@@ -232,18 +224,18 @@ void BombHei::updateVelocity() {
     }
 }
 
-void BombHei::exeWait(void)  // 0x0
+void MechanicKoopaMini::exeWait(void)  // 0x0
 {
     if (al::isFirstStep(this)) {
         al::startAction(this, "Wait");
         al::setVelocityZero(this);
     }
     if (al::isValidStageSwitch(this, "SwitchStart") && al::isOnStageSwitch(this, "SwitchStart")) {
-        al::setNerve(this, &nrvBombHei.Wander);
+        al::setNerve(this, &nrvMechanicKoopaMini.Wander);
     }
 }
 
-void BombHei::exeWander(void)  // 0x8
+void MechanicKoopaMini::exeWander(void)  // 0x8
 {
     if (al::isFirstStep(this)) {
         al::setVelocityZero(this);
@@ -256,7 +248,7 @@ void BombHei::exeWander(void)  // 0x8
     bool isNearPlayer = al::isNearPlayer(this, 1000.0f);
 
     if (isGrounded && isNearPlayer) {
-        al::setNerve(this, &nrvBombHei.Turn);
+        al::setNerve(this, &nrvMechanicKoopaMini.Turn);
     } else if (isGrounded) {
         this->airTime = 0;
         this->groundNormal = *al::getOnGroundNormal(this, 0);
@@ -264,13 +256,13 @@ void BombHei::exeWander(void)  // 0x8
         this->airTime++;
 
         if (this->airTime > 4) {
-            al::setNerve(this, &nrvBombHei.Fall);
+            al::setNerve(this, &nrvMechanicKoopaMini.Fall);
         }
     }
 }
 
 // FIXME vector math is non-matching, but seems to be functionally identical.
-void BombHei::exeCapHit(void)  // 0x10
+void MechanicKoopaMini::exeCapHit(void)  // 0x10
 {
     sead::Quatf frontUp;
 
@@ -294,9 +286,9 @@ void BombHei::exeCapHit(void)  // 0x10
 
     if (al::isActionEnd(this)) {
         if (al::isNearPlayer(this, 1000.0f)) {
-            al::setNerve(this, &nrvBombHei.Find);
+            al::setNerve(this, &nrvMechanicKoopaMini.Find);
         } else {
-            al::setNerve(this, &nrvBombHei.Wander);
+            al::setNerve(this, &nrvMechanicKoopaMini.Wander);
         }
     } else if (al::isOnGround(this, 0)) {
         this->airTime = 0;
@@ -321,7 +313,7 @@ void BombHei::exeCapHit(void)  // 0x10
         this->airTime++;
 
         if (this->airTime > 5) {
-            al::setNerve(this, &nrvBombHei.Fall);
+            al::setNerve(this, &nrvMechanicKoopaMini.Fall);
         } else {
             al::addVelocityToGravity(this, 1.0);
             al::scaleVelocity(this, 0.98f);
@@ -329,7 +321,7 @@ void BombHei::exeCapHit(void)  // 0x10
     }
 }
 
-void BombHei::exeBlowDown(void)  // 0x18
+void MechanicKoopaMini::exeBlowDown(void)  // 0x18
 {
     if (al::isFirstStep(this)) {
         al::startAction(this, "BlowDown");
@@ -346,7 +338,7 @@ void BombHei::exeBlowDown(void)  // 0x18
     }
 }
 
-void BombHei::exeAttack(void)  // 0x20
+void MechanicKoopaMini::exeAttack(void)  // 0x20
 {
     if (al::isFirstStep(this)) {
         al::startAction(this, "AttackSuccess");
@@ -356,11 +348,11 @@ void BombHei::exeAttack(void)  // 0x20
     this->updateVelocity();
 
     if (al::isActionEnd(this)) {
-        al::setNerve(this, &nrvBombHei.Wander);
+        al::setNerve(this, &nrvMechanicKoopaMini.Wander);
     }
 }
 
-void BombHei::exeTurn(void)  // 0x28
+void MechanicKoopaMini::exeTurn(void)  // 0x28
 {
     if(al::isFirstStep(this)) {
         al::setVelocityZero(this);
@@ -372,13 +364,13 @@ void BombHei::exeTurn(void)  // 0x28
     PlayerActorHakoniwa* pActor = al::tryFindNearestPlayerActor(this);
     if(pActor) {
         if(al::isFaceToTargetDegreeH(this, al::getTrans(pActor), frontDir, 1.0f)) {
-            al::setNerve(this, &nrvBombHei.Find);
+            al::setNerve(this, &nrvMechanicKoopaMini.Find);
             return;
         }
         al::turnToTarget(this, al::getTrans(pActor), 3.5f);
     }
     if(!al::isNearPlayer(this, 1300.0f)) {
-        al::setNerve(this, &nrvBombHei.Wander);
+        al::setNerve(this, &nrvMechanicKoopaMini.Wander);
         return;
     }
     if(al::isOnGround(this, 0)) {
@@ -388,11 +380,11 @@ void BombHei::exeTurn(void)  // 0x28
     al::addVelocityToGravity(this, 1.0f);
     al::scaleVelocity(this, 0.98f);
     if(this->airTime++ >= 4) {
-        al::setNerve(this, &nrvBombHei.Fall);
+        al::setNerve(this, &nrvMechanicKoopaMini.Fall);
     }
 }
 
-void BombHei::exeFall(void)  // 0x30
+void MechanicKoopaMini::exeFall(void)  // 0x30
 {
     if (al::isFirstStep(this)) {
         al::invalidateClipping(this);
@@ -404,11 +396,11 @@ void BombHei::exeFall(void)  // 0x30
     if (al::isOnGround(this, 0)) {
         this->airTime = 0;
         al::validateClipping(this);
-        al::setNerve(this, &nrvBombHei.Land);
+        al::setNerve(this, &nrvMechanicKoopaMini.Land);
     }
 }
 
-void BombHei::exeFind(void)  // 0x38
+void MechanicKoopaMini::exeFind(void)  // 0x38
 {
     if (al::isFirstStep(this)) {
         al::setVelocityZero(this);
@@ -417,16 +409,16 @@ void BombHei::exeFind(void)  // 0x38
         al::invalidateClipping(this);
     }
     if (!al::isOnGround(this, 0) && this->airTime++ >= 4) {
-        al::setNerve(this, &nrvBombHei.Fall);
+        al::setNerve(this, &nrvMechanicKoopaMini.Fall);
     } else {
         this->updateVelocity();
         if (!al::isActionEnd(this))
             return;
-        al::setNerve(this, &nrvBombHei.Chase);
+        al::setNerve(this, &nrvMechanicKoopaMini.Chase);
     }
 }
 
-void BombHei::exeChase(void)  // 0x40
+void MechanicKoopaMini::exeChase(void)  // 0x40
 {
     if (al::isFirstStep(this)) {
         al::startAction(this, "Run");
@@ -455,16 +447,16 @@ void BombHei::exeChase(void)  // 0x40
             al::scaleVelocity(this, 0.95);
         }
         if(!al::isNearPlayer(this, 1300.0f)) {
-            al::setNerve(this, &nrvBombHei.Wander);
+            al::setNerve(this, &nrvMechanicKoopaMini.Wander);
             return;
         }else if(al::isNearPlayer(this, 700.0f) && this->explodeTimer == 0) {
-            if(al::tryStartMclAnimIfNotPlaying(bombInstance, "SignExplosion")) {
+            if(al::tryStartMclAnimIfNotPlaying(koopaMiniInstance, "SignExplosion")) {
                 this->explodeTimer = 180;
             }
         }
     }else {
         if (this->airTime++ >= 4) {
-            al::setNerve(this, &nrvBombHei.Fall);
+            al::setNerve(this, &nrvMechanicKoopaMini.Fall);
             return;
         }
     }
@@ -473,7 +465,7 @@ void BombHei::exeChase(void)  // 0x40
     
 }
 
-void BombHei::exeLand(void)  // 0x48
+void MechanicKoopaMini::exeLand(void)  // 0x48
 {
     int* airTimePtr;
 
@@ -489,15 +481,15 @@ void BombHei::exeLand(void)  // 0x48
     this->updateVelocity();
 
     if (!al::isOnGround(this, 0) && (*airTimePtr)++ >= 4) {
-        al::setNerve(this, &nrvBombHei.Fall);
+        al::setNerve(this, &nrvMechanicKoopaMini.Fall);
     } else {
         if (!al::isActionEnd(this))
             return;
-        al::setNerve(this, &nrvBombHei.Wander);
+        al::setNerve(this, &nrvMechanicKoopaMini.Wander);
     }
 }
 
-void BombHei::exeExplode(void) {
+void MechanicKoopaMini::exeExplode(void) {
     if(al::isFirstStep(this)) {
         al::setVelocityZero(this);
 

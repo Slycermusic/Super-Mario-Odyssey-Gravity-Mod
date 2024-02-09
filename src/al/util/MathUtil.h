@@ -54,6 +54,10 @@ void rotateVectorDegreeX(sead::Vector3f*, float);
 void rotateVectorDegreeY(sead::Vector3f*, float);
 void rotateVectorDegreeZ(sead::Vector3f*, float);
 
+void rotateQuatXDirDegree(sead::Quatf* out, const sead::Quatf& from, float degree);
+void rotateQuatYDirDegree(sead::Quatf* out, const sead::Quatf& from, float degree);
+void rotateQuatZDirDegree(sead::Quatf* out, const sead::Quatf& from, float degree);
+
 float calcAngleToTargetH(LiveActor const*,sead::Vector3f const&);
 float calcAngleToTargetV(LiveActor const*,sead::Vector3f const&);
 float calcAngleRadian(sead::Vector3f const&,sead::Vector3f const&);

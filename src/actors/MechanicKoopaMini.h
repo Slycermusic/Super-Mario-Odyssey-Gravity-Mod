@@ -14,12 +14,12 @@
 #include <sead/heap/seadHeap.h>
 #include <sead/math/seadVector.h>
 
-class BombHei;
-extern BombHei *bombInstance;
+class MechanicKoopaMini;
+extern MechanicKoopaMini *koopaMiniInstance;
 
-class BombHei : public al::LiveActor {
+class MechanicKoopaMini : public al::LiveActor {
 public:
-    BombHei(char const* name);
+    MechanicKoopaMini(char const* name);
     virtual void init(al::ActorInitInfo const& info);
     void listenAppear();
     virtual bool receiveMsg(const al::SensorMsg* message, al::HitSensor* source, al::HitSensor* target);

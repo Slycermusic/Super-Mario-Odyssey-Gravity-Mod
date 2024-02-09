@@ -37,3 +37,10 @@ al::setNerve(this, &NrvExampleUseCase.Wait);
 #define NERVE_IMPL(Class, Action) NERVE_IMPL_(Class, Action, Action)
 
 #define NERVE_MAKE(Class, Action) Class##Nrv##Action Action;
+
+#define NERVE_HEADER_INSTANCE_(Class, Action, ActionFunc)                                                                                            \
+    class Class##Nrv##Action : public al::Nerve {                                                                                                    \
+    public:                                                                                                                                          \
+        void execute(al::NerveKeeper* keeper) const override;                                                                                        \
+        static Class##Nrv##Action sInstance;                                                                                                         \
+    };

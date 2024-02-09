@@ -12,7 +12,6 @@ public:
     StarPieceCounter(const char* name, const al::LayoutInitInfo& initInfo);
 
     void appear();
-
     void exeWait();
     void exeAppear();
     void exeAdd();

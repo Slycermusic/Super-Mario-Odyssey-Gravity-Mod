@@ -6,7 +6,13 @@
 #include "actors/SuperSpinDriver.h"
 #include "actors/StarPiece.h"
 #include "actors/StarPieceRail.h"
+#include "actors/ElectricFence.h"
+#include "actors/ElectricFenceRail.h"
 #include "actors/BombHei.h"
+//#include "actors/MechanicKoopaMini.h"
+#include "actors/AsteroidBlockRotateStep.h"
+#include "actors/CoinRedWatcher.h"
+#include "actors/CoinBlueWatcher.h"
 #include "game/Actors/Shine.h"
 
 namespace al
@@ -84,7 +90,13 @@ static al::NameToCreator<al::createActor> actorEntries[] = {
     {"FlipPanelObserver", &ca::createCustomActor<FlipPanelObserver>},
     {"StarPiece", &ca::createCustomActor<StarPiece>},
     {"StarPieceRail", &ca::createCustomActor<StarPieceRail>},
+    {"ElectricFence", &ca::createCustomActor<StarPiece>},
+    {"ElectricFenceRail", &ca::createCustomActor<StarPieceRail>},
+    {"AsteroidBlockRotateStep", &ca::createCustomActor<AsteroidBlockRotateStep>},
     {"BombHei", &ca::createCustomActor<BombHei>},
+    {"CoinRedWatcher", &ca::createCustomActor<CoinRedWatcher>},
+    {"CoinBlueWatcher", &ca::createCustomActor<CoinBlueWatcher>},
+    //{"MechanicKoopaMini", &ca::createCustomActor<MechanicKoopaMini>},
     // VANILLA ACTOR ENTRIES
     {"AchievementNpc", &al::createActorFunction<class AchievementNpc>},
     {"AirBubble", &al::createActorFunction<class AirBubble>},
