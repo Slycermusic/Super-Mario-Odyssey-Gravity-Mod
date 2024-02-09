@@ -27,6 +27,11 @@ they are standing on.
 Not all actors support gravity by default, and so a patch has been added to 
 give them such functionality, though most actors do not function as expected.
 
+## Custom Save
+
+Custom save system made by [Amethyst-szs].
+
+Adding custom collectable corrupts saves from the original game, the custom save will save into a custom slots, avoiding all problems.
 
 # Notes
 
