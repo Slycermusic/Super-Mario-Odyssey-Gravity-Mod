@@ -2,6 +2,8 @@
 
 #include "common.hpp"
 
+#define PROJECT_NAME "SlycerGalaxy"
+
 #define EXL_MODULE_NAME "exlaunch"
 #define EXL_MODULE_NAME_LEN 8
 

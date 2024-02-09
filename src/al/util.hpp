@@ -68,6 +68,13 @@ namespace al
     al::PlayerHolder *getScenePlayerHolder(al::Scene const *);
 
     sead::Heap *getCurrentHeap(void);
+    sead::Heap *getCourseSelectHeap(void);
+    sead::Heap *getCourseSelectResourceHeap(void);
+    sead::Heap *getSceneHeap(void);
+    sead::Heap *getSceneResourceHeap(void);
+    sead::Heap *getSequenceHeap(void);
+    sead::Heap *getStationedHeap(void);
+    sead::Heap *getWorldResourceHeap(void);
 
     al::Projection *getProjection(al::IUseCamera const *, int);
 
