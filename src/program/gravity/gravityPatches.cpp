@@ -8,6 +8,23 @@
 #include "patches.hpp"
 #include "sead/basis/seadNew.hpp"
 
+namespace al {
+class IUseCollision;
+class Triangle {
+public:
+    Triangle();
+private:
+    void* filler[0x70/8];
+};
+static_assert(sizeof(Triangle) == 0x70, "Triangle size mismatch");
+class CollisionPartsFilterBase;
+class TriangleFilterBase;
+}
+namespace alCollisionUtil {
+bool getFirstPolyOnArrow(const al::IUseCollision*, sead::Vector3f*, al::Triangle*, const sead::Vector3f&, const sead::Vector3f&, const al::CollisionPartsFilterBase*, const al::TriangleFilterBase*);
+}
+
+
 namespace patch = exl::patch;
 namespace inst = exl::armv8::inst;
 namespace reg = exl::armv8::reg;
@@ -69,31 +86,133 @@ HOOK_DEFINE_TRAMPOLINE(ShadowKeeper) {
     }
 };
 
-HOOK_DEFINE_TRAMPOLINE(LiveActorAfterPlacement) {
-    static void Callback(al::LiveActor* actor) {
-        Orig(actor);
-        ActorGravityKeeper* gravityKeeper = actor->getGravityKeeper();
+HOOK_DEFINE_TRAMPOLINE(ShadowKeeperAfterPlacement) {
+    static void Callback(al::ShadowKeeper* shadowKeeper, void* arg) {
+        Orig(shadowKeeper, arg);
+        ActorGravityKeeper* gravityKeeper = shadowKeeper->mActorGravityKeeper;
         if (gravityKeeper) gravityKeeper->init();
     }
 };
 
-HOOK_DEFINE_TRAMPOLINE(HakoniwaAfterPlacement) {
-    static void Callback(al::LiveActor* actor) {
-        Orig(actor);
-        ActorGravityKeeper* gravityKeeper = actor->getGravityKeeper();
-        if (gravityKeeper) gravityKeeper->init();
+bool customIsFallNextMove(const al::LiveActor* actor, const sead::Vector3f& offset, f32 offsetY, f32 x2) {
+    sead::Vector3f up = sead::Vector3f::ey;
+
+    auto triangle = al::Triangle{};
+    sead::Vector3f someVec = {0,0,0};
+    const sead::Vector3f& actorTrans = al::getTrans(actor);
+    sead::Vector3f finalPos = al::getTrans(actor) + offset + (up * offsetY);
+    sead::Vector3f anotherVec = -(up * x2);
+    return !alCollisionUtil::getFirstPolyOnArrow(actor, &someVec, &triangle, finalPos, anotherVec, nullptr, nullptr);
+}
+bool customIsFallOrDamageCodeNextMove(const al::LiveActor* actor, const sead::Vector3f& offset, f32 offsetY, f32 x2) {
+    sead::Vector3f up = sead::Vector3f::ey;
+
+    auto triangle = al::Triangle{};
+    sead::Vector3f someVec = {0,0,0};
+    const sead::Vector3f& actorTrans = al::getTrans(actor);
+    sead::Vector3f finalPos = al::getTrans(actor) + offset + (up * offsetY);
+    sead::Vector3f anotherVec = -(up * x2);
+    if(!alCollisionUtil::getFirstPolyOnArrow(actor, &someVec, &triangle, finalPos, anotherVec, nullptr, nullptr)) return true;
+    return al::isFloorCode(triangle, "DamageFire") || al::isFloorCode(triangle, "Poison");
+
+}
+
+HOOK_DEFINE_TRAMPOLINE(customIsFallNextMoveHook) {
+    static bool Callback(const al::LiveActor* actor, const sead::Vector3f& offset, f32 offsetY, f32 x2) {
+        return customIsFallNextMove(actor, offset, offsetY, x2);
+    }
+};
+HOOK_DEFINE_TRAMPOLINE(customIsFallOrDamageCodeNextMoveHook) {
+    static bool Callback(const al::LiveActor* actor, const sead::Vector3f& offset, f32 offsetY, f32 x2) {
+        return customIsFallOrDamageCodeNextMove(actor, offset, offsetY, x2);
     }
 };
 
+static sead::Vector3f getUp(const al::LiveActor* self) {
+    if(!self || !self->mPoseKeeper) return sead::Vector3f(0,1,0); // default up (0,1,0)
+    if(self->mPoseKeeper->getUpPtr())
+        return self->mPoseKeeper->getUp();
+
+    sead::Vector3f up = {0,1,0};
+    al::calcUpDir(&up, self);
+    return up;
+}
+
+#define VTBL_WRAP(out, in)                                                      \
+union {                                                                         \
+    decltype(in) m_Underlying;                                                  \
+    uintptr_t m_Vtbl;                                                           \
+                                                                                \
+    inline auto GetFuncArray() { return reinterpret_cast<uintptr_t*>(m_Vtbl); } \
+}* out = reinterpret_cast<decltype(out)>(in);
+
+static bool isInNonGraphicsDirector = false;
+
+HOOK_DEFINE_TRAMPOLINE(GravityForNervesHook) {
+    static void Callback(al::NerveKeeper* keeper) {
+        al::LiveActor* self = reinterpret_cast<al::LiveActor*>(keeper->mParent);
+
+        bool shouldPatch = true;
+        shouldPatch &= isInNonGraphicsDirector;
+        shouldPatch &= self != nullptr;
+        if(shouldPatch) {
+            VTBL_WRAP(wrappedSelf, self);
+            shouldPatch &= wrappedSelf->m_Vtbl != 0;
+            if(shouldPatch)
+                shouldPatch &= wrappedSelf->GetFuncArray()[14] == reinterpret_cast<uintptr_t>(reinterpret_cast<void*>(&al::LiveActor::receiveMsgScreenPoint));
+        }
+        
+        sead::Vector3f prev = sead::Vector3f::ey;
+        if(shouldPatch) {
+            patch::CodePatcher p(0x18FF6A0);
+            auto vec = getUp(self);
+            p.Write(vec);
+        }
+        Orig(keeper);
+
+        if(shouldPatch) {
+            patch::CodePatcher p(0x18FF6A0);
+            p.Write(prev);
+        }
+    }
+};
+
+HOOK_DEFINE_INLINE(ExecuteDirectorForNonGraphicsStart) {
+    static void Callback(exl::hook::InlineCtx* ctx) {
+        isInNonGraphicsDirector = true;
+    }
+};
+
+HOOK_DEFINE_INLINE(ExecuteDirectorForNonGraphicsEnd) {
+    static void Callback(exl::hook::InlineCtx* ctx) {
+        isInNonGraphicsDirector = false;
+    }
+};
+
+HOOK_DEFINE_REPLACE(CustomAddVelocityY) {
+    static void Callback(al::LiveActor* actor, f32 y) {
+        *actor->mPoseKeeper->getVelocityPtr() += (sead::Vector3f::ey*y);
+    }
+};
+
+// to get name of objects: typeid(*actor).name()
 void gravityPatches() {
+    customIsFallNextMoveHook::InstallAtSymbol("_ZN2al14isFallNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
+    customIsFallOrDamageCodeNextMoveHook::InstallAtSymbol("_ZN2al26isFallOrDamageCodeNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
+
+    ExecuteDirectorForNonGraphicsStart::InstallAtOffset(0x4d1830);
+    ExecuteDirectorForNonGraphicsEnd::InstallAtOffset(0x4d1838);
+    GravityForNervesHook::InstallAtSymbol("_ZN2al11NerveKeeper6updateEv");
+
+    CustomAddVelocityY::InstallAtSymbol("_ZN2al12addVelocityYEPNS_9LiveActorEf");
+
     AreaFactoryHook::InstallAtSymbol("_ZN18ProjectAreaFactoryC2Ev");
     PoseKeeperTQGMSV::InstallAtSymbol("_ZN2al19initActorPoseTQGMSVEPNS_9LiveActorE");
     PoseKeeperTRGMSV::InstallAtSymbol("_ZN2al19initActorPoseTRGMSVEPNS_9LiveActorE");
     PoseKeeperTQGSV::InstallAtSymbol("_ZN2al18initActorPoseTQGSVEPNS_9LiveActorE");
     PoseKeeperTFGSV::InstallAtSymbol("_ZN2al18initActorPoseTFGSVEPNS_9LiveActorE");
     LiveActorMovement::InstallAtSymbol("_ZN2al9LiveActor8movementEv");
-    LiveActorAfterPlacement::InstallAtSymbol("_ZN2al9LiveActor18initAfterPlacementEv");
-    HakoniwaAfterPlacement::InstallAtSymbol("_ZN19PlayerActorHakoniwa18initAfterPlacementEv");
+    ShadowKeeperAfterPlacement::InstallAtSymbol("_ZN2al12ShadowKeeper18initAfterPlacementEPNS_18GraphicsSystemInfoE");
     ShadowKeeper::InstallAtSymbol("_ZN2al12ShadowKeeperC2Ev");
     patch::CodePatcher p(0x90d4d8);
     p.WriteInst(inst::Movz(reg::X0, 0x18)); // size of ShadowKeeper from 0x10 -> 0x18

@@ -118,7 +118,6 @@ void ActorGravityKeeper::update() {
     }
     if (gravity != sead::Vector3f::zero) {
         gravity.normalize();
-
         al::setGravity(actor, gravity);
     }
 }

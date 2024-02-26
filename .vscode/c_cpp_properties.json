@@ -4,11 +4,16 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/src/**",
+                "${workspaceFolder}/src/lib/**",
+                "${workspaceFolder}/src/program/**",
                 "${workspaceFolder}/src/nn/**",
                 "${workspaceFolder}/src/sead/**",
                 "${workspaceFolder}/src/lib/**"
             ],
-            "defines": [],
+            "defines": [
+                "EXL_LOAD_KIND=Module",
+                "EXL_LOAD_KIND_ENUM=EXL_LOAD_KIND_MODULE"
+            ],
             "compilerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-g++",
             "cStandard": "c17",
             "cppStandard": "gnu++23",

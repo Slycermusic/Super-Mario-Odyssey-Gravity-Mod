@@ -160,6 +160,8 @@ namespace al {
 
     void calcFrontDir(sead::Vector3f *, const LiveActor *);
     void calcQuat(sead::Quatf*, const LiveActor*);
+    void calcQuatUp(sead::Vector3f*, const LiveActor*);
+    void calcUpDir(sead::Vector3f*, const LiveActor*);
     void calcJointFrontDir(sead::Vector3f*, const LiveActor*, const char*);
     void calcJointPos(sead::Vector3f*, const LiveActor*, const char*);
 
@@ -186,6 +188,9 @@ namespace al {
     bool tryGetAreaObjArg(int*, al::AreaObj const*, const char*);
     bool tryGetAreaObjArg(float*, al::AreaObj const*, const char*);
     bool tryGetAreaObjArg(bool*, al::AreaObj const*, const char*);
+
+    class Triangle;
+    bool isFloorCode(const al::Triangle&, const char*);
 }
 
 namespace alPlayerFunction {

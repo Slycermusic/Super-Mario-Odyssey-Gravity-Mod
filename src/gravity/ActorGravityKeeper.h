@@ -11,7 +11,7 @@ public:
     bool tryCalcGravity(sead::Vector3f& result, const al::LiveActor* actor);
     void update();
 
-private:
+public:
     const al::LiveActor* mActor;
     sead::FixedPtrArray<GravityArea, 50> mAreas;
 };

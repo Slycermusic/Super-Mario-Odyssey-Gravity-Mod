@@ -415,7 +415,7 @@ void cameraPatches();
 
 extern "C" void exl_main(void* x0, void* x1) {
     /* Setup hooking enviroment. */
-    envSetOwnProcessHandle(exl::util::proc_handle::Get());
+    //envSetOwnProcessHandle(exl::util::proc_handle::Get());
     exl::hook::Initialize();
 
     //R_ABORT_UNLESS(Logger::instance().init("yotoutlemondecpl", 3080).value);
@@ -454,7 +454,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     InitializeStageSceneLayoutHook::InstallAtSymbol("_ZN16StageSceneLayoutC2EPKcRKN2al14LayoutInitInfoEPKNS2_12PlayerHolderEPKNS2_17SubCameraRendererE");
     exl::patch::CodePatcher(0x17C8DC).BranchInst(reinterpret_cast<void*>(bomb));
 
-    //Logger::instance().init("192.168.0.44", 3080);
+    Logger::instance().init(LOGGER_IP, 3080);
 
     gravityPatches();
     actorPatches();

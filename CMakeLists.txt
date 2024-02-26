@@ -34,6 +34,8 @@ file(GLOB_RECURSE LOCAL_LIBRARIES ${PROJECT_SOURCE_DIR}/libs/*.a)
 ## Include nx tools
 include(${CMAKE_SOURCE_DIR}/cmake/SwitchTools.cmake)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 ## subsdk9
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")

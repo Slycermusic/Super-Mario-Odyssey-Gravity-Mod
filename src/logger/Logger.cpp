@@ -3,6 +3,7 @@
 #include "nifm.h"
 #include "util.h"
 #include "lib.hpp"
+#include <algorithm>
 
 char socketPool[0x600000+0x20000] __attribute__((aligned(0x1000)));
 
@@ -66,9 +67,9 @@ void Logger::log(const char *fmt, ...) {
 
     char buffer[0x500] = {};
 
-    if(nn::util::VSNPrintf(buffer, sizeof(buffer), fmt, args) > 0) {
-        nn::socket::Send(instance().mSocketFd, buffer, strlen(buffer), 0);
-    }
+    u64 length = nn::util::VSNPrintf(buffer, sizeof(buffer), fmt, args);
+    if(length > 0)
+        nn::socket::Send(instance().mSocketFd, buffer, std::min(sizeof(buffer), length), 0);
 
     va_end(args);
 }
@@ -80,9 +81,9 @@ void Logger::log(const char *fmt, va_list args) {
 
     char buffer[0x500] = {};
 
-    if(nn::util::VSNPrintf(buffer, sizeof(buffer), fmt, args) > 0) {
-        nn::socket::Send(instance().mSocketFd, buffer, strlen(buffer), 0);
-    }
+    u64 length = nn::util::VSNPrintf(buffer, sizeof(buffer), fmt, args);
+    if(length > 0)
+        nn::socket::Send(instance().mSocketFd, buffer, std::min(sizeof(buffer), length), 0);
 }
 
 bool Logger::stringToIPAddress(const char* str, in_addr* out) {
