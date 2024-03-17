@@ -195,6 +195,20 @@ HOOK_DEFINE_REPLACE(CustomAddVelocityY) {
     }
 };
 
+HOOK_DEFINE_TRAMPOLINE(RotateQuatLocalDirDegreeEYFix) {
+    static void Callback(sead::Quatf* out, const sead::Quatf& a1, int a2, float a3) {
+        sead::Vector3f prev = sead::Vector3f::ey;
+
+        patch::CodePatcher p(0x18FF6A0);
+        p.Write(sead::Vector3f{0,1,0});
+
+        Orig(out, a1, a2, a3);
+
+        patch::CodePatcher p2(0x18FF6A0);
+        p2.Write(prev);
+    }
+};
+
 // to get name of objects: typeid(*actor).name()
 void gravityPatches() {
     customIsFallNextMoveHook::InstallAtSymbol("_ZN2al14isFallNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
@@ -203,6 +217,7 @@ void gravityPatches() {
     ExecuteDirectorForNonGraphicsStart::InstallAtOffset(0x4d1830);
     ExecuteDirectorForNonGraphicsEnd::InstallAtOffset(0x4d1838);
     GravityForNervesHook::InstallAtSymbol("_ZN2al11NerveKeeper6updateEv");
+    RotateQuatLocalDirDegreeEYFix::InstallAtSymbol("_ZN2al24rotateQuatLocalDirDegreeEPN4sead4QuatIfEERKS2_if");
 
     CustomAddVelocityY::InstallAtSymbol("_ZN2al12addVelocityYEPNS_9LiveActorEf");
 
