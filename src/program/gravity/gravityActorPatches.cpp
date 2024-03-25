@@ -19,7 +19,19 @@ sead::Vector3f someOperation(const sead::Quatf& a1, const sead::Vector3f& a2) {
 }
 
 bool customTurnQuatFrontToDirDegreeH(sead::Quatf* a1, const sead::Vector3f& a2, float a3) {
-    sead::Vector3f myUp = -al::getGravity(currentActor);
+    sead::Vector3f myUp = {0.0f, 1.0f, 0.0f};
+    if(currentActor) {
+        myUp = -al::getGravity(currentActor);
+        sead::Vector3f rayOrg = al::getTrans(currentActor) + myUp * 30.0f;
+        al::Triangle downTri;
+        if (alCollisionUtil::getFirstPolyOnArrow(currentActor, nullptr, &downTri, rayOrg, -myUp*3000.0f, nullptr, nullptr)) {
+            myUp = downTri.mFaceNormal;
+        } else {
+            Logger::log("Failed to get down triangle for turning quat: %p\n", currentActor);
+        }
+    } else {
+        Logger::log("Trying to turn a quat without a current actor: %p\n", currentActor);
+    }
 
     sead::Vector3f x0 = a2;
     //x0.y = 0.0f;

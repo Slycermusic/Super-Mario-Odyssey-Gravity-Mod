@@ -10,13 +10,6 @@
 
 namespace al {
 class IUseCollision;
-class Triangle {
-public:
-    Triangle();
-private:
-    void* filler[0x70/8];
-};
-static_assert(sizeof(Triangle) == 0x70, "Triangle size mismatch");
 class CollisionPartsFilterBase;
 class TriangleFilterBase;
 }
@@ -213,8 +206,17 @@ HOOK_DEFINE_TRAMPOLINE(RotateQuatLocalDirDegreeEYFix) {
     }
 };
 
+HOOK_DEFINE_TRAMPOLINE(SetVelocityDebugger) {
+    static void Callback(al::LiveActor* actor, const sead::Vector3f& velocity) {
+        Orig(actor, velocity);
+        //Logger::log("Velocity of %s: %.02f, %.02f, %.02f\n", typeid(*actor).name(), velocity.x, velocity.y, velocity.z);
+    }
+};
+
 // to get name of objects: typeid(*actor).name()
 void gravityPatches() {
+    SetVelocityDebugger::InstallAtSymbol("_ZN2al11setVelocityEPNS_9LiveActorERKN4sead7Vector3IfEE");
+
     customIsFallNextMoveHook::InstallAtSymbol("_ZN2al14isFallNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
     customIsFallOrDamageCodeNextMoveHook::InstallAtSymbol("_ZN2al26isFallOrDamageCodeNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
 

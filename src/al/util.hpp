@@ -520,4 +520,33 @@ namespace al
     void calcQuatSide(sead::Vector3f*, const sead::Quatf&);
     void calcQuatGravity(sead::Vector3f*, const sead::Quatf&);
 
+
+class CollisionParts;
+class KCPrismData;
+class KCPrismHeader;
+class Triangle {
+public:
+    al::ByamlIter* getAttributes(al::ByamlIter*) const;
+    sead::Vector3f getFaceNormal() const;
+
+    CollisionParts* mCollisionParts;
+    KCPrismData* mKCPPrismData;
+    KCPrismHeader* mKCPrismHeader;
+
+    sead::Vector3f mFaceNormal;
+    sead::Vector3f mEdgeNormal1;
+    sead::Vector3f mEdgeNormal2;
+    sead::Vector3f mEdgeNormal3;
+    sead::Vector3f mPosition1;
+    sead::Vector3f mPosition2;
+    sead::Vector3f mPosition3;
+};
+}
+
+namespace alCollisionUtil {
+bool getFirstPolyOnArrow(al::IUseCollision const*, sead::Vector3f* result, al::Triangle* null, sead::Vector3f const& origin,
+    sead::Vector3f const& ray, al::CollisionPartsFilterBase const* nope, al::TriangleFilterBase const* nothanks);
+
+bool getHitPosOnArrow(al::IUseCollision const*, sead::Vector3f*,
+    sead::Vector3f const&, sead::Vector3f const&, al::CollisionPartsFilterBase const*, al::TriangleFilterBase const*);
 }
