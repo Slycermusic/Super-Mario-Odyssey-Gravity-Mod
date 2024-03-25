@@ -49,7 +49,7 @@ bool customTurnQuatFrontToDirDegreeH(sead::Quatf* a1, const sead::Vector3f& a2, 
     }
     bool check = al::turnQuat(a1, *a1, x3, x0, sead::Mathf::deg2rad(a3));
     // turnQuatYDirRate(a1, *a1, {0.0f, 1.0f, 0.0f}, 0.2f);
-    al::turnQuatYDirRate(a1, *a1, myUp, 0.2f);
+    //al::turnQuatYDirRate(a1, *a1, myUp, 0.2f);
     return check;
 }
 

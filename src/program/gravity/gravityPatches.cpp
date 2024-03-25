@@ -147,6 +147,7 @@ union {                                                                         
 }* out = reinterpret_cast<decltype(out)>(in);
 
 static bool isInNonGraphicsDirector = false;
+al::LiveActor* currentActor = nullptr;
 
 HOOK_DEFINE_TRAMPOLINE(GravityForNervesHook) {
     static void Callback(al::NerveKeeper* keeper) {
@@ -163,16 +164,19 @@ HOOK_DEFINE_TRAMPOLINE(GravityForNervesHook) {
         }
         
         sead::Vector3f prev = sead::Vector3f::ey;
+        al::LiveActor* prevActor = currentActor;
         if(shouldPatch) {
             patch::CodePatcher p(0x18FF6A0);
             auto vec = getUp(self);
             p.Write(vec);
+            currentActor = self;
         }
         Orig(keeper);
 
         if(shouldPatch) {
             patch::CodePatcher p(0x18FF6A0);
             p.Write(prev);
+            currentActor = prevActor;
         }
     }
 };
