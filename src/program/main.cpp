@@ -410,6 +410,7 @@ HOOK_DEFINE_TRAMPOLINE(ControlHook) {
 };
 
 void gravityPatches();
+void gravityActorPatches();
 void actorPatches();
 void cameraPatches();
 
@@ -457,6 +458,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     Logger::instance().init(LOGGER_IP, 3080);
 
     gravityPatches();
+    gravityActorPatches();
     actorPatches();
     cameraPatches();
 }

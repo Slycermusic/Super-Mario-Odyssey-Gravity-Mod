@@ -136,6 +136,11 @@ struct Vector3 : public Policies<T>::Vec3Base
     /// Apply a transformation `m` (rotation + translation) to this vector.
     void mul(const Mtx34& m);
     void multScalar(T t);
+    Vector3 cross(const Vector3& t) const {
+        Vector3 o;
+        Vector3CalcCommon<T>::cross(o, *this, t);
+        return o;
+    }
 
     T normalize();
     void set(const Vector3& other);

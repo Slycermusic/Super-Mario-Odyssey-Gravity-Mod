@@ -510,4 +510,14 @@ namespace al
     void setDitherAnimMaxAlpha(al::LiveActor *, float);
     void setDitherAnimClippingJudgeLocalOffset(al::LiveActor *, sead::Vector3f const&);
     void setDitherAnimClippingJudgeParam(al::LiveActor *, const char *);
+
+    
+    bool turnQuatFrontToDirDegreeH(sead::Quatf* a1, const sead::Vector3f& a2, float a3);
+    bool turnQuat(sead::Quatf*, const sead::Quatf&, const sead::Vector3f&, const sead::Vector3f&, float);
+    bool turnQuatYDirRate(sead::Quatf*, const sead::Quatf&, const sead::Vector3f&, float);
+    void calcQuatFront(sead::Vector3f*, const sead::Quatf&);
+    void calcQuatUp(sead::Vector3f*, const sead::Quatf&);
+    void calcQuatSide(sead::Vector3f*, const sead::Quatf&);
+    void calcQuatGravity(sead::Vector3f*, const sead::Quatf&);
+
 }
