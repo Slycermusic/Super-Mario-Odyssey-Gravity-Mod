@@ -44,6 +44,7 @@ static al::NameToCreator<al::createArea> areaEntries[] = {
     {"GravityConeArea", &ca::createAreaObjFunction<GravityArea>},
     {"GravityCubeArea", &ca::createAreaObjFunction<GravityArea>},
     {"GravityPointArea", &ca::createAreaObjFunction<GravityArea>},
+    {"GravityRailArea", &ca::createAreaObjFunction<GravityArea>},
     // base area entries
     {"AlignDirectionArea", &al::createAreaObjFunction<al::AreaObj>},
     {"AudioEffectChangeArea", &al::createAreaObjFunction<al::AreaObj>},

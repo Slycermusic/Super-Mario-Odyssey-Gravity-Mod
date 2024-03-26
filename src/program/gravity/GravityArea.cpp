@@ -1,10 +1,19 @@
 #include "gravity/GravityArea.h"
+#include "al/Rail.h"
+#include "al/placement/PlacementFunction.h"
 #include "al/util/LiveActorUtil.h"
 #include "al/util/MathUtil.h"
 #include "al/util/StringUtil.h"
 #include "logger/Logger.hpp"
 
 GravityArea::GravityArea(const char* name) : AreaObj(name) {}
+
+GravityArea::~GravityArea() {
+    if (mRail) {
+        delete mRail;
+        mRail = nullptr;
+    }
+}
 
 void GravityArea::init(al::AreaInitInfo const& info) {
     al::AreaObj::init(info);
@@ -22,6 +31,12 @@ void GravityArea::init(al::AreaInitInfo const& info) {
     al::tryGetAreaObjArg(&isDisableEdges, this, "IsDisableEdges");
     al::tryGetAreaObjArg(&mEdgeType, this, "EdgeType");
     al::tryGetAreaObjArg(&mValidSurfaces, this, "ValidSurfaces");
+
+    al::PlacementInfo pInfo;
+    if(al::tryGetLinksInfo(&pInfo, info, "Rail")) {
+        mRail = new al::Rail();
+        mRail->init(pInfo);
+    }
     
 }
 
@@ -145,4 +160,19 @@ void GravityArea::calcConeGravity(sead::Vector3f& result, const al::LiveActor* a
         result = {mHeight*result.x/distXZ, -mRadius, mHeight*result.z/distXZ};
     }
     calcRotatedGravity(result);
+}
+
+void GravityArea::calcRailGravity(sead::Vector3f& result, const al::LiveActor* actor) {
+    if(!mRail) {
+        result = sead::Vector3f::zero;
+        return;
+    }
+    sead::Vector3f actorTrans = al::getTrans(actor);
+    sead::Vector3f railPos;
+    mRail->calcNearestRailPos(&railPos, actorTrans, 7.5f);
+    result = railPos - actorTrans;
+    Logger::log("Ended with %.02f length > %.02f radius\n", result.length(), mRadius);
+    if(result.length() > mRadius) {
+        result = sead::Vector3f::zero;
+    }
 }

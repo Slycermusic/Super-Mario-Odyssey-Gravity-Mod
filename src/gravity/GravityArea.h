@@ -6,6 +6,7 @@
 class GravityArea : public al::AreaObj {
 public:
     GravityArea(const char* name);
+    ~GravityArea();
     void init(al::AreaInitInfo const&);
     void calcRotatedGravity(sead::Vector3f& result);
     bool isValidAngleDeg(const sead::Vector3f& distance);
@@ -18,6 +19,7 @@ public:
     void calcParallelGravity(sead::Vector3f& result, const al::LiveActor* actor);
     void calcConeGravity(sead::Vector3f& result, const al::LiveActor* actor);
     void calcCylinderGravity(sead::Vector3f& result, const al::LiveActor* actor);
+    void calcRailGravity(sead::Vector3f& result, const al::LiveActor* actor);
 
     float mRadius = 0.0f;
     float mHeight = 0.0f;
@@ -34,4 +36,5 @@ public:
     bool isDisableEdges = false;
     bool isInverted = false;
     bool isValidAngle = false;
+    al::Rail* mRail = nullptr;
 };
