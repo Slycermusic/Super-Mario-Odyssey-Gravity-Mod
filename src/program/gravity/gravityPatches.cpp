@@ -67,7 +67,8 @@ HOOK_DEFINE_TRAMPOLINE(LiveActorMovement) {
         Orig(actor);
         if (!actor->mLiveActorFlag->mDead && (!actor->mLiveActorFlag->mClipped || actor->mLiveActorFlag->mDrawClipped)) {
             ActorGravityKeeper* gravityKeeper = actor->getGravityKeeper();
-            if (gravityKeeper) gravityKeeper->update();
+            if (gravityKeeper && !al::isEqualString(typeid(*actor).name(), "N2al9FootPrintE"))
+                gravityKeeper->update();
         }
     }
 };
