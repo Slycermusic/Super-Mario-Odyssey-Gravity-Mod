@@ -31,6 +31,7 @@ void GravityArea::init(al::AreaInitInfo const& info) {
     al::tryGetAreaObjArg(&isDisableEdges, this, "IsDisableEdges");
     al::tryGetAreaObjArg(&mEdgeType, this, "EdgeType");
     al::tryGetAreaObjArg(&mValidSurfaces, this, "ValidSurfaces");
+    al::tryGetAreaObjArg(&mRailInterval, this, "RailInterval");
 
     al::PlacementInfo pInfo;
     if(al::tryGetLinksInfo(&pInfo, info, "Rail")) {
@@ -169,7 +170,7 @@ void GravityArea::calcRailGravity(sead::Vector3f& result, const al::LiveActor* a
     }
     sead::Vector3f actorTrans = al::getTrans(actor);
     sead::Vector3f railPos;
-    mRail->calcNearestRailPos(&railPos, actorTrans, 7.5f);
+    mRail->calcNearestRailPos(&railPos, actorTrans, mRailInterval);
     result = railPos - actorTrans;
     if(result.length() > mRadius) {
         result = sead::Vector3f::zero;

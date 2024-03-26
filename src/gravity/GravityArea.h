@@ -37,4 +37,5 @@ public:
     bool isInverted = false;
     bool isValidAngle = false;
     al::Rail* mRail = nullptr;
+    float mRailInterval = 40.0f;
 };
