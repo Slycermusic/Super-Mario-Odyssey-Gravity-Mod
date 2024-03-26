@@ -171,7 +171,6 @@ void GravityArea::calcRailGravity(sead::Vector3f& result, const al::LiveActor* a
     sead::Vector3f railPos;
     mRail->calcNearestRailPos(&railPos, actorTrans, 7.5f);
     result = railPos - actorTrans;
-    Logger::log("Ended with %.02f length > %.02f radius\n", result.length(), mRadius);
     if(result.length() > mRadius) {
         result = sead::Vector3f::zero;
     }

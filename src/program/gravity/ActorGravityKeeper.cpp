@@ -62,14 +62,6 @@ bool ActorGravityKeeper::tryCalcGravity(sead::Vector3f& result, const al::LiveAc
     bool isInAnyArea = false;
     int highestPriority = INT32_MIN;
     for (int i = 0; i < mAreas.size(); i++) {
-        if(al::isEqualString(typeid(*actor).name(), typeid(PlayerActorHakoniwa).name()) && al::isEqualString(mAreas[i]->mName, "GravityRailArea")) {
-            Logger::log("checking area %d: %s, %s\n", i, mAreas[i]->mName, mAreas[i]->mIsValid ? "true" : "false");
-            Logger::log("isInVolume: %s, %s\n", mAreas[i]->isInVolume(actorTrans) ? "true" : "false", typeid(*mAreas[i]->mAreaShape).name());
-            sead::Vector3f localPos;
-            mAreas[i]->mAreaShape->calcLocalPos(&localPos, actorTrans);
-            Logger::log("ActorTrans: %.02f, %.02f, %.02f => localPos: %.02f, %.02f, %.02f\n", actorTrans.x, actorTrans.y, actorTrans.z, localPos.x, localPos.y, localPos.z);
-            //Logger::log("originType %d, so requires %.02f < x < %.02f, %.02f < y < %.02f, %.02f < z < %.02f\n", mAreas[i]->mAreaShape->mOriginType, mAreas[i]->mAreaShape->mMin.x, mAreas[i]->mAreaShape->mMax.x, mAreas[i]->mAreaShape->mMin.y, mAreas[i]->mAreaShape->mMax.y, mAreas[i]->mAreaShape->mMin.z, mAreas[i]->mAreaShape->mMax.z);
-        }
         GravityArea* curArea = mAreas[i];
         const char* areaName = mAreas[i]->mName;
         if (curArea->isInVolume(actorTrans)) {
