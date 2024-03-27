@@ -20,15 +20,17 @@ add_compile_definitions(EXL_PROGRAM_ID=${CONFIG_TITLE_ID} NNSDK=1)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/module/subsdk9.json.template ${CMAKE_CURRENT_BINARY_DIR}/subsdk9.json)
 
 ## Project sources
-include_directories(${PROJECT_SOURCE_DIR}/src/lib)
-include_directories(${PROJECT_SOURCE_DIR}/src/nn)
+include_directories(${PROJECT_SOURCE_DIR}/lib/)
+include_directories(${PROJECT_SOURCE_DIR}/lib/exlaunch)
+include_directories(${PROJECT_SOURCE_DIR}/lib/exlaunch/lib)
+include_directories(${PROJECT_SOURCE_DIR}/lib/nn)
+include_directories(${PROJECT_SOURCE_DIR}/lib/sead)
 include_directories(${PROJECT_SOURCE_DIR}/src/program)
-include_directories(${PROJECT_SOURCE_DIR}/src/sead)
 include_directories(${PROJECT_SOURCE_DIR}/src/qm)
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 file(GLOB_RECURSE SOURCES_ASM ${PROJECT_SOURCE_DIR}/src/*.s)
-file(GLOB_RECURSE SOURCES_H ${PROJECT_SOURCE_DIR}/src/*.h ${PROJECT_SOURCE_DIR}/src/*.hpp)
-file(GLOB_RECURSE SOURCES_CXX ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.c)
+file(GLOB_RECURSE SOURCES_H ${PROJECT_SOURCE_DIR}/src/*.h ${PROJECT_SOURCE_DIR}/src/*.hpp ${PROJECT_SOURCE_DIR}/lib/*.h ${PROJECT_SOURCE_DIR}/lib/*.hpp)
+file(GLOB_RECURSE SOURCES_CXX ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/lib/*.cpp ${PROJECT_SOURCE_DIR}/lib/*.c)
 file(GLOB_RECURSE LOCAL_LIBRARIES ${PROJECT_SOURCE_DIR}/libs/*.a)
 
 ## Include nx tools
