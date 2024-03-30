@@ -1,6 +1,6 @@
 #include "common.hpp"
 
-#include "program/setting.hpp"
+#include "setting.hpp"
 #include <string>
 
 constexpr const int ModuleNameLength = std::char_traits<char>::length(EXL_MODULE_NAME);

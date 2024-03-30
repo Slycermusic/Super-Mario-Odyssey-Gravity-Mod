@@ -15,7 +15,7 @@
 
 #include "lib.hpp"
 
-#include "program/setting.hpp"
+#include "setting.hpp"
 
 #include "qmSaveHook.h"
 

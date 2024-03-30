@@ -1,4 +1,4 @@
-#include "cameras/CameraPoserCustom.h"
+#include "camera/CameraPoserCustom.h"
 #include "Library/Camera/CameraPoser.h"
 #include "al/camera/CameraAngleVerticalCtrl.h"
 #include "Library/Camera/CameraPoserFunction.h"
