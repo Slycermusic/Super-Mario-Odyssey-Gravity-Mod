@@ -1,9 +1,12 @@
 #include "gravity/GravityArea.h"
-#include "al/Rail.h"
-#include "al/placement/PlacementFunction.h"
+#include "Library/Rail/Rail.h"
+#include "Library/Placement/PlacementFunction.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/util/MathUtil.h"
-#include "al/util/StringUtil.h"
+#include "al/area/AreaObj.h"
+#include "Library/Math/MathUtil.h"
+#include "Library/Math/MathAngleUtil.h"
+#include "Library/Math/MathLengthUtil.h"
+#include "Library/Base/String.h"
 #include "logger/Logger.hpp"
 
 GravityArea::GravityArea(const char* name) : AreaObj(name) {}

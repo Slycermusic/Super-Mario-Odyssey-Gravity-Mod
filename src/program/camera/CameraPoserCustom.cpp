@@ -1,11 +1,14 @@
 #include "cameras/CameraPoserCustom.h"
-#include "al/camera/CameraPoser.h"
+#include "Library/Camera/CameraPoser.h"
 #include "al/camera/CameraAngleVerticalCtrl.h"
-#include "al/camera/alCameraPoserFunction.h"
-#include "al/util/MathUtil.h"
+#include "Library/Camera/CameraPoserFunction.h"
+#include "Library/Math/MathUtil.h"
+#include "Library/Math/MathAngleUtil.h"
+#include "Library/Math/MathLengthUtil.h"
+#include "Library/Math/MathRandomUtil.h"
 #include "logger/Logger.hpp"
-#include "sead/gfx/seadCamera.h"
-#include "sead/math/seadVector.h"
+#include "gfx/seadCamera.h"
+#include "math/seadVector.h"
 
 namespace cc {
 

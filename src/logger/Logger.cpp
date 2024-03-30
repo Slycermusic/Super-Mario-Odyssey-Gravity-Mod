@@ -1,7 +1,7 @@
 #include "Logger.hpp"
-#include "socket.h"
-#include "nifm.h"
-#include "util.h"
+#include "nn/socket.h"
+#include "nn/nifm.h"
+#include "nn/util.h"
 #include "lib.hpp"
 #include <algorithm>
 
@@ -12,12 +12,12 @@ Logger& Logger::instance() {
     return instance;
 }
 
-nn::Result Logger::init(const char *ip, u16 port) {
+bool Logger::init(const char *ip, u16 port) {
     in_addr hostAddress = { 0 };
     sockaddr serverAddress = { 0 };
 
     if (mState != LoggerState::UNINITIALIZED)
-        return -1;
+        return false;
 
     nn::nifm::Initialize();
 
@@ -29,32 +29,32 @@ nn::Result Logger::init(const char *ip, u16 port) {
 
     if (!nn::nifm::IsNetworkAvailable()) {
         mState = LoggerState::UNAVAILABLE;
-        return -1;
+        return false;
     }
 
     if ((mSocketFd = nn::socket::Socket(2, 1, 0)) < 0) {
         mState = LoggerState::UNAVAILABLE;
-        return -1;
+        return false;
     }
 
     if (!this->stringToIPAddress(ip, &hostAddress)) {
         mState = LoggerState::UNAVAILABLE;
-        return -1;
+        return false;
     }
 
     serverAddress.address = hostAddress;
     serverAddress.port = nn::socket::InetHtons(port);
     serverAddress.family = 2;
 
-    nn::Result result = nn::socket::Connect(mSocketFd, &serverAddress, sizeof(serverAddress));
+    s32 result = nn::socket::Connect(mSocketFd, &serverAddress, sizeof(serverAddress));
 
-    mState = result.isSuccess() ? LoggerState::CONNECTED : LoggerState::DISCONNECTED;
+    mState = result==0 ? LoggerState::CONNECTED : LoggerState::DISCONNECTED;
 
     if (mState == LoggerState::CONNECTED) {
         Logger::log("Connected!\n");
     }
 
-    return result;
+    return result == 0;
 }
 
 void Logger::log(const char *fmt, ...) {

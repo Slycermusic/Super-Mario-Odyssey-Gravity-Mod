@@ -1,14 +1,23 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
-#include "al/camera/CameraPoser.h"
-#include "game/Player/HackCap/CapMessageEnableChecker.h"
-#include "game/Player/HackCap/CapTargetInfo.h"
-#include "game/Player/IUsePlayerPuppet.h"
-#include "al/util/NerveUtil.h"
-#include "game/Player/PlayerCameraFunction.h"
+#include "Library/LiveActor/LiveActor.h"
+#include "Library/Camera/CameraPoser.h"
+//#include "game/Player/HackCap/CapMessageEnableChecker.h"
+//#include "game/Player/HackCap/CapTargetInfo.h"
+//#include "game/Player/IUsePlayerPuppet.h"
+#include "Library/Nerve/NerveUtil.h"
+//#include "game/Player/PlayerCameraFunction.h"
 #include <basis/seadTypes.h>
 #include <math/seadVector.h>
+
+class CapTargetInfo;
+class IUsePlayerPuppet;
+class CapMessageEnableChecker;
+
+namespace al {
+class CameraTicket;
+class AreaObj;
+}
 
 class SuperSpinDriver : public al::LiveActor {
 public:

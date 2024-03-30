@@ -1,10 +1,11 @@
-#include "al/layout/LayoutActor.h"
 #include "al/save/SaveDataDirector.h"
 #include "al/util.hpp"
+#include "Library/Layout/LayoutActor.h"
+#include "Library/System/SystemKit.h"
 
-#include "game/GameData/GameDataHolder.h"
-#include "game/System/Application.h"
-#include "game/Layouts/CommonVerticalList.h"
+#include "System/GameDataHolder.h"
+#include "System/Application.h"
+#include "Layouts/CommonVerticalList.h"
 
 #include "rs/util/InputUtil.h"
 
@@ -94,7 +95,7 @@ void tryInitSD(al::SaveDataDirector* director) {
 HOOK_DEFINE_TRAMPOLINE(ReadSyncHook) {
     static void Callback(char const* name, unsigned int size, unsigned int alwaysTrue) {
         sead::FixedSafeString<0x40> filePath = getSaveFilePath(name);
-        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDirector;
+        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDataDirector;
 
         tryInitSD(director);
 
@@ -122,7 +123,7 @@ HOOK_DEFINE_TRAMPOLINE(ReadSyncHook) {
 HOOK_DEFINE_TRAMPOLINE(ReadRequestHook) {
     static void Callback(char const* name, unsigned int size, unsigned int alwaysTrue) {
         sead::FixedSafeString<0x40> filePath = getSaveFilePath(name);
-        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDirector;
+        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDataDirector;
 
         // Run the original code, we'll be replacing the work buffer (if possible) later
         Orig(name, size, alwaysTrue);
@@ -148,7 +149,7 @@ HOOK_DEFINE_TRAMPOLINE(ReadRequestHook) {
 HOOK_DEFINE_TRAMPOLINE(WriteSyncHook) {
     static void Callback(char const* name, unsigned int size, unsigned int alwaysTrue, bool alwaysTrue2) {
         sead::FixedSafeString<0x40> filePath = getSaveFilePath(name);
-        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDirector;
+        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDataDirector;
 
         // Write file to SD instead of save and set result to success
         qm::fs::fileWrite(director->mWorkBuffer, size, filePath.cstr());
@@ -159,7 +160,7 @@ HOOK_DEFINE_TRAMPOLINE(WriteSyncHook) {
 HOOK_DEFINE_TRAMPOLINE(WriteRequestHook) {
     static void Callback(char const* name, unsigned int size, unsigned int alwaysTrue, bool alwaysTrue2) {
         sead::FixedSafeString<0x40> filePath = getSaveFilePath(name);
-        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDirector;
+        al::SaveDataDirector* director = Application::instance()->mSystemKit->mSaveDataDirector;
 
         // Write file to SD instead of save and set result to success
         qm::fs::fileWrite(director->mWorkBuffer, size, filePath.cstr());

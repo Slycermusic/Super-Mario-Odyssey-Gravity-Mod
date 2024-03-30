@@ -1,7 +1,6 @@
 #pragma once
 
-#include "nn/fs.h"
-#include "nn/result.h"
+typedef unsigned int uint;
 
 namespace qm {
 namespace fs {
@@ -19,7 +18,7 @@ namespace fs {
     void fileLoad(void* buf, const char* path);
     void fileLoad(void* buf, uint* bufSize, const char* path);
     
-    nn::Result fileWrite(void* buf, size_t size, const char* path);
+    bool fileWrite(void* buf, size_t size, const char* path);
     void fileDelete(const char* path);
 }
 }

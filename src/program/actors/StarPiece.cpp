@@ -1,13 +1,13 @@
 #include "actors/StarPiece.h"
-#include "al/LiveActor/LiveActor.h"
+#include "Library/LiveActor/LiveActor.h"
 #include "al/util.hpp"
 #include "al/util/OtherUtil.h"
-#include "al/util/NerveUtil.h"
-#include "al/util/NerveSetupUtil.h"
+#include "Library/Nerve/NerveUtil.h"
+#include "Library/Nerve/NerveSetupUtil.h"
 #include "rs/util/SensorUtil.h"
-#include "al/util/RandomUtil.h"
-#include "al/util/MathUtil.h"
-#include "sead/math/seadQuat.h"
+#include "Library/Math/MathRandomUtil.h"
+#include "Library/Math/MathUtil.h"
+#include "math/seadQuat.h"
 
 namespace {
     using namespace al;

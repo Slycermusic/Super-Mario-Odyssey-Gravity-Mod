@@ -1,4 +1,4 @@
-#include "al/LiveActor/LiveActorFlag.h"
+#include "Library/LiveActor/LiveActorFlag.h"
 #include "al/factory/AreaObjFactoryEntries100.h"
 #include "al/factory/ProjectAreaFactory.h"
 #include "al/util/LiveActorUtil.h"
@@ -6,7 +6,11 @@
 #include "lib.hpp"
 #include "logger/Logger.hpp"
 #include "patches.hpp"
-#include "sead/basis/seadNew.hpp"
+#include "basis/seadNew.h"
+#include "Library/Nerve/NerveKeeper.h"
+#include "Library/Shadow/ShadowKeeper.h"
+
+#include "al/util.hpp"
 
 namespace al {
 class IUseCollision;
@@ -18,6 +22,7 @@ bool getFirstPolyOnArrow(const al::IUseCollision*, sead::Vector3f*, al::Triangle
 }
 
 
+
 namespace patch = exl::patch;
 namespace inst = exl::armv8::inst;
 namespace reg = exl::armv8::reg;
@@ -25,8 +30,8 @@ namespace reg = exl::armv8::reg;
 HOOK_DEFINE_TRAMPOLINE(AreaFactoryHook) {
     static void Callback(ProjectAreaFactory* areaFactory) {
         Orig(areaFactory);
-        areaFactory->actorTable = areaEntries;
-        areaFactory->factoryCount = sizeof(areaEntries)/sizeof(areaEntries[0]);
+        areaFactory->mFactoryEntries = areaEntries;
+        areaFactory->mNumFactoryEntries = sizeof(areaEntries)/sizeof(areaEntries[0]);
     }
 };
 
@@ -65,8 +70,8 @@ HOOK_DEFINE_TRAMPOLINE(PoseKeeperTRGMSV) {
 HOOK_DEFINE_TRAMPOLINE(LiveActorMovement) {
     static void Callback(al::LiveActor* actor) {
         Orig(actor);
-        if (!actor->mLiveActorFlag->mDead && (!actor->mLiveActorFlag->mClipped || actor->mLiveActorFlag->mDrawClipped)) {
-            ActorGravityKeeper* gravityKeeper = actor->getGravityKeeper();
+        if (!actor->mFlags->isDead && (!actor->mFlags->isClipped || actor->mFlags->isDrawClipped)) {
+            ActorGravityKeeper* gravityKeeper = actor->mShadowKeeper->mActorGravityKeeper;
             if (gravityKeeper && !al::isEqualString(typeid(*actor).name(), "N2al9FootPrintE"))
                 gravityKeeper->update();
         }
@@ -122,7 +127,7 @@ HOOK_DEFINE_TRAMPOLINE(customIsFallOrDamageCodeNextMoveHook) {
     }
 };
 
-static sead::Vector3f getUp(const al::LiveActor* self) {
+static sead::Vector3f getUpCustom(const al::LiveActor* self) {
     if(!self || !self->mPoseKeeper) return sead::Vector3f(0,1,0); // default up (0,1,0)
     if(self->mPoseKeeper->getUpPtr())
         return self->mPoseKeeper->getUp();
@@ -161,7 +166,7 @@ HOOK_DEFINE_TRAMPOLINE(GravityForNervesHook) {
         al::LiveActor* prevActor = currentActor;
         if(shouldPatch) {
             patch::CodePatcher p(0x18FF6A0);
-            auto vec = getUp(self);
+            auto vec = getUpCustom(self);
             p.Write(vec);
             currentActor = self;
         }

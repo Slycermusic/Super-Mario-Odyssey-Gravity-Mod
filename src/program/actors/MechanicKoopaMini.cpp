@@ -1,5 +1,12 @@
 #include "actors/MechanicKoopaMini.h"
-#include "al/util/NerveSetupUtil.h"
+#include "Library/Nerve/NerveSetupUtil.h"
+#include "Library/Math/MathUtil.h"
+#include "Library/Math/MathAngleUtil.h"
+#include "Library/Math/MathLengthUtil.h"
+#include "Library/Collision/Collider.h"
+#include "Library/LiveActor/ActorSensorFunction.h"
+#include "Library/LiveActor/ActorMovementFunction.h"
+#include "Library/LiveActor/ActorPoseKeeper.h"
 
 MechanicKoopaMini *koopaMiniInstance;
 
@@ -77,7 +84,7 @@ void MechanicKoopaMini::listenAppear() {
 bool MechanicKoopaMini::receiveMsg(const al::SensorMsg* message, al::HitSensor* source,
                         al::HitSensor* target) {
     if(rs::isMsgTargetMarkerPosition(message)) {
-        sead::Vector3f &transPtr = al::getTrans(this);
+        const sead::Vector3f &transPtr = al::getTrans(this);
         rs::setMsgTargetMarkerPosition(message, sead::Vector3f(transPtr.x + 0.0, transPtr.y + 180.0f, transPtr.z + 0.0));
         return true;
     }
@@ -94,7 +101,7 @@ bool MechanicKoopaMini::receiveMsg(const al::SensorMsg* message, al::HitSensor* 
     if(rs::isMsgCapReflect(message) && !al::isNerve(this, &nrvMechanicKoopaMini.BlowDown) && this->capHitCooldown <= 0) {
         rs::requestHitReactionToAttacker(message, target, source);
         al::setNerve(this, &nrvMechanicKoopaMini.CapHit);
-        this->capPos = *al::getSensorPos(source);
+        this->capPos = al::getSensorPos(source);
         this->capHitCooldown = 10;
         return true;
     }
@@ -191,7 +198,7 @@ void MechanicKoopaMini::control() {
 }
 
 void MechanicKoopaMini::updateCollider() {
-    sead::Vector3f& velocity = al::getVelocity(this);
+    const sead::Vector3f& velocity = al::getVelocity(this);
 
     if (al::isNoCollide(this)) {
         *al::getTransPtr(this) += velocity;
@@ -268,7 +275,7 @@ void MechanicKoopaMini::exeCapHit(void)  // 0x10
 
     if (al::isFirstStep(this)) {
         al::startAction(this, "CapHit");
-        sead::Vector3f& actorPos = al::getTrans(this);
+        const sead::Vector3f& actorPos = al::getTrans(this);
 
         sead::Vector3f capDirection =
             sead::Vector3f(actorPos.x - this->capPos.x, 0.0f, actorPos.z - this->capPos.z);
@@ -297,7 +304,7 @@ void MechanicKoopaMini::exeCapHit(void)  // 0x10
 
         al::scaleVelocity(this, 0.95f);
 
-        sead::Vector3f& velocity = al::getVelocity(this);
+        const sead::Vector3f& velocity = al::getVelocity(this);
 
         sead::Vector3f unk = sead::Vector3f(velocity.x, 0.0f, velocity.z);
 

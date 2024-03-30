@@ -1,13 +1,16 @@
 #include "gravity/ActorGravityKeeper.h"
 #include "al/area/AreaObjGroup.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/util/StringUtil.h"
+#include "Library/Base/String.h"
 #include "diag/assert.hpp"
 #include "logger/Logger.hpp"
 #include "rs/util/LiveActorUtil.h"
-#include "sead/math/seadVector.h"
-#include "sead/math/seadVectorCalcCommon.h"
+#include "math/seadVector.h"
+#include "math/seadVectorCalcCommon.h"
 #include <typeinfo>
+#include "Player/HackCap.h"
+#include "Player/PlayerColliderHakoniwa.h"
+#include "Library/Area/AreaObjDirector.h"
 
 ActorGravityKeeper::ActorGravityKeeper(const al::LiveActor* actor) : mAreas(){
     this->mActor = actor;
@@ -109,7 +112,7 @@ void ActorGravityKeeper::update() {
             al::isEqualString(typeid(*actor).name(), typeid(HackCap).name())) {
             PlayerActorHakoniwa* player = (PlayerActorHakoniwa*)al::getPlayerActor(actor, 0);
             if (!rs::isPlayer2D(player)) {
-                PlayerColliderHakoniwa* playerCollision = player->mPlayerCollider;
+                PlayerColliderHakoniwa* playerCollision = player->mPlayerColliderHakoniwa;
                 sead::Vector3f triNorm = sead::Vector3f::zero;
                 if (rs::calcOnGroundNormalOrGravityDir(&triNorm, player, playerCollision)) {
                     gravity = -triNorm;

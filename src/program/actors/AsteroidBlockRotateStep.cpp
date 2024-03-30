@@ -1,11 +1,12 @@
 #include "actors/AsteroidBlockRotateStep.h"
 #include "al/util/OtherUtil.h"
 #include "logger/Logger.hpp"
-#include "sead/basis/seadNew.hpp"
+#include "basis/seadNew.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/LiveActor/LiveActor.h"
-#include "al/sensor/IsMsg.h"
+#include "Library/LiveActor/LiveActor.h"
+#include "Library/LiveActor/ActorSensorMsgFunction.h"
 #include "al/util.hpp"
+#include "rs/util/SensorUtil.h"
 
 AsteroidBlockRotateStep::AsteroidBlockRotateStep(const char* name) : al::LiveActor(name) {}
 

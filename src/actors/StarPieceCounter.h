@@ -1,10 +1,13 @@
 #pragma once
 
-#include "al/layout/LayoutActor.h"
-#include "al/layout/LayoutInitInfo.h"
-#include "al/util/NerveUtil.h"
+#include "Library/Layout/LayoutActor.h"
+#include "Library/Nerve/NerveUtil.h"
 
 #include "actors/StarPiece.h"
+
+namespace al {
+class LayoutInitInfo;
+}
 
 class StarPieceCounter : public al::LayoutActor {
 

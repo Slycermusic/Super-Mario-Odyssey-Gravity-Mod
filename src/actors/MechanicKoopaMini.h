@@ -1,18 +1,17 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
+#include "Library/LiveActor/LiveActor.h"
 #include "al/physics/ExternalForceKeeper.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/util/NerveUtil.h"
+#include "Library/Nerve/NerveUtil.h"
 #include "al/util/SensorUtil.h"
 #include "rs/util/SensorUtil.h"
-#include "al/util/MathUtil.h"
 #include "game/Player/PlayerActorHakoniwa.h"
 
-#include <sead/basis/seadTypes.h>
-#include <sead/container/seadPtrArray.h>
-#include <sead/heap/seadHeap.h>
-#include <sead/math/seadVector.h>
+#include <basis/seadTypes.h>
+#include <container/seadPtrArray.h>
+#include <heap/seadHeap.h>
+#include <math/seadVector.h>
 
 class MechanicKoopaMini;
 extern MechanicKoopaMini *koopaMiniInstance;

@@ -1,20 +1,23 @@
 #include "actors/SuperSpinDriver.h"
-#include "al/LiveActor/LiveActor.h"
-#include "al/rail/RailRider.h"
+#include "Library/LiveActor/LiveActor.h"
+#include "Library/LiveActor/ActorSensorMsgFunction.h"
+#include "Library/Rail/RailRider.h"
 #include "al/util.hpp"
-#include "al/util/CameraUtil.h"
+//#include "al/util/CameraUtil.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/util/MathUtil.h"
-#include "al/util/NerveUtil.h"
-#include "al/util/NerveSetupUtil.h"
+#include "Library/Math/MathUtil.h"
+#include "Library/Math/MathAngleUtil.h"
+#include "Library/Math/MathLengthUtil.h"
+#include "Library/Nerve/NerveUtil.h"
+#include "Library/Nerve/NerveSetupUtil.h"
 #include "al/util/OtherUtil.h"
-#include "al/util/PlacementUtil.h"
+//#include "al/util/PlacementUtil.h"
 #include "al/util/SensorUtil.h"
-#include "al/util/VectorUtil.h"
+//#include "al/util/VectorUtil.h"
 #include "logger/Logger.hpp"
 #include "math/seadQuat.h"
 #include "math/seadVector.h"
-#include "rs/util/LiveActorUtil.h"
+//#include "rs/util/LiveActorUtil.h"
 #include "rs/util/SensorUtil.h"
 #include <cmath>
 #include <math.h>
@@ -343,12 +346,12 @@ void SuperSpinDriver::exeShoot(void) {
 
         sead::Vector3f* curTrans = rs::getPuppetTrans(mPlayerPuppet);
 
-        al::lerpVec(curTrans, *curTrans, railRider->mCurRailPos, 0.25); // interpolate new position for smoother movement
+        al::lerpVec(curTrans, *curTrans, railRider->mPosition, 0.25); // interpolate new position for smoother movement
 
         sead::Vector3f puppetUp;
         rs::calcPuppetUp(&puppetUp, mPlayerPuppet);
 
-        al::lerpVec(&puppetUp, puppetUp, railRider->mCurRailDir, 0.25); // interpolate up direction for smoother rotations
+        al::lerpVec(&puppetUp, puppetUp, railRider->mDirection, 0.25); // interpolate up direction for smoother rotations
 
         rs::setPuppetUp(mPlayerPuppet, puppetUp);
 

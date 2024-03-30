@@ -10,6 +10,9 @@
             EXL_ABORT(_tmp_r);  \
     }
 
+#define R_ABORT_UNLESS_NN(nnexpr) \
+    R_ABORT_UNLESS(nnexpr.GetInnerValueForDebug())
+
 namespace exl::result {
     using BaseType = u32;
     constexpr BaseType SuccessValue = BaseType();

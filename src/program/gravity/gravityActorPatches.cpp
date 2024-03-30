@@ -2,8 +2,10 @@
 #include <math/seadVector.h>
 
 #include "al/util.hpp"
-#include "al/util/VectorUtil.h"
 #include "lib.hpp"
+#include "Library/LiveActor/LiveActor.h"
+#include "Library/Math/MathUtil.h"
+#include "Library/Math/MathAngleUtil.h"
 #include "logger/Logger.hpp"
 
 extern al::LiveActor* currentActor;

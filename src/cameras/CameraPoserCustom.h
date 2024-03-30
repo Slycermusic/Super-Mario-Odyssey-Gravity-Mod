@@ -1,11 +1,11 @@
 #pragma once
 
-#include "al/camera/CameraPoser.h"
-#include "al/camera/alCameraPoserFunction.h"
+#include "Library/Camera/CameraPoser.h"
+#include "Library/Camera/CameraPoserFunction.h"
 #include "al/camera/CameraVerticalAbsorber2DGalaxy.h"
 #include "al/camera/CameraAngleVerticalCtrl.h"
 
-#include "sead/math/seadVector.h"
+#include "math/seadVector.h"
 
 #include "al/util.hpp"
 

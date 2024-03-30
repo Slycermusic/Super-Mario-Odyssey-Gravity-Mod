@@ -41,7 +41,7 @@ namespace exl::hook::impl {
             _HOOK_STATIC_CALLBACK_ASSERT();
 
             uintptr_t ptr = 0;
-            R_ABORT_UNLESS(nn::ro::LookupSymbol(&ptr, sym));
+            R_ABORT_UNLESS_NN(nn::ro::LookupSymbol(&ptr, sym));
 
            hook::Hook(ptr, Derived::Callback);
         }

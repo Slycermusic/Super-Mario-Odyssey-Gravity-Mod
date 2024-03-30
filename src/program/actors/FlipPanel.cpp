@@ -1,9 +1,9 @@
 #include "actors/FlipPanel.h"
 #include "al/util/OtherUtil.h"
 #include "logger/Logger.hpp"
-#include "sead/basis/seadNew.hpp"
-#include "al/util/NerveSetupUtil.h"
-#include "al/util/NerveUtil.h"
+#include "basis/seadNew.h"
+#include "Library/Nerve/NerveSetupUtil.h"
+#include "Library/Nerve/NerveUtil.h"
 
 namespace {
     using namespace al;

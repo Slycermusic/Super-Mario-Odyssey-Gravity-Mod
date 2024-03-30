@@ -1,7 +1,7 @@
 #include "actors/StarPieceCounter.h"
-#include "al/LiveActor/LiveActor.h"
-#include "al/util/NerveSetupUtil.h"
-#include "al/util/NerveUtil.h"
+#include "Library/LiveActor/LiveActor.h"
+#include "Library/Nerve/NerveSetupUtil.h"
+#include "Library/Nerve/NerveUtil.h"
 #include "al/util.hpp"
 
 namespace {

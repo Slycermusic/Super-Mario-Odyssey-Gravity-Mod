@@ -1,8 +1,8 @@
 #include <cstdlib>
 
-#include "sead/basis/seadNew.hpp"
-#include "sead/heap/seadHeap.h"
-#include "sead/heap/seadHeapMgr.h"
+#include "basis/seadNew.h"
+#include "heap/seadHeap.h"
+#include "heap/seadHeapMgr.h"
 
 namespace sead
 {

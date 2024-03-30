@@ -1,9 +1,11 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
-#include "al/util/LiveActorUtil.h"
-#include "rs/util/SensorUtil.h"
-#include <sead/container/seadPtrArray.h>
+#include "Library/LiveActor/LiveActor.h"
+
+namespace al {
+class SensorMsg;
+class HitSensor;
+}
 
 class AsteroidBlockRotateStep : public al::LiveActor {
 public:

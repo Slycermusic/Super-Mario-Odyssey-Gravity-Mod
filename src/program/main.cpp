@@ -2,7 +2,7 @@
 #include "patches.hpp"
 #include "nn/err.h"
 #include "logger/Logger.hpp"
-#include "fs.h"
+#include "nn/fs.h"
 
 #include <basis/seadRawPrint.h>
 #include <prim/seadSafeString.h>
@@ -18,18 +18,21 @@
 #include <gfx/seadTextWriter.h>
 #include <gfx/seadViewport.h>
 
+#include <common/aglDrawContext.h>
+
 #include "al/util.hpp"
-#include "game/GameData/GameDataFunction.h"
+#include "System/GameDataFunction.h"
+#include "System/GameDrawInfo.h"
 #include "game/Layouts/MapLayout.h"
 #include "game/SceneObjs/ReflectBomb.h"
-#include "game/SceneObjs/RailMoveMapParts.h"
-#include "game/SceneObjs/KuriboHack.h"
-#include "game/StageScene/StageScene.h"
-#include "game/System/GameSystem.h"
-#include "game/System/Application.h"
-#include "game/HakoniwaSequence/HakoniwaSequence.h"
+#include "SceneObjs/RailMoveMapParts.h"
+#include "Scene/StageScene.h"
+#include "System/GameSystem.h"
+#include "System/GameDataFile.h"
+#include "System/GameFrameWorkNx.h"
+#include "System/Application.h"
+#include "Sequence/HakoniwaSequence.h"
 #include "qm.h"
-#include "rs/util.hpp"
 #include "al/util/OtherUtil.h"
 
 #include "al/util.hpp"
@@ -138,7 +141,7 @@ HOOK_DEFINE_TRAMPOLINE(CreateFileDeviceMgr) {
         
         Orig(thisPtr);
 
-        thisPtr->mMountedSd = nn::fs::MountSdCardForDebug("sd");
+        thisPtr->mMountedSd = nn::fs::MountSdCardForDebug("sd").IsSuccess();
 
         sead::NinSDFileDevice *sdFileDevice = new sead::NinSDFileDevice();
 
@@ -233,7 +236,7 @@ HOOK_DEFINE_TRAMPOLINE(GameSystemInit) {
 
         sead::TextWriter::setDefaultFont(sead::DebugFontMgrJis1Nvn::sInstance);
 
-        al::GameDrawInfo* drawInfo = Application::instance()->mDrawInfo;
+        al::GameDrawInfo* drawInfo = Application::instance()->mGameDrawInfo;
 
         agl::DrawContext *context = drawInfo->mDrawContext;
         agl::RenderBuffer* renderBuffer = drawInfo->mFirstRenderBuffer;
@@ -261,7 +264,7 @@ HOOK_DEFINE_TRAMPOLINE(DrawDebugMenu) {
         gTextWriter->beginDraw();
 
         gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, 10.f));
-        gTextWriter->printf("FPS: %d\n", static_cast<int>(round(Application::instance()->mFramework->calcFps())));
+        gTextWriter->printf("FPS: %d\n", static_cast<int>(round(Application::instance()->mGameFramework->calcFps())));
 
     }
 };
@@ -284,7 +287,7 @@ void bomb(al::LiveActor* actor, float num){
 }
 
 HOOK_DEFINE_TRAMPOLINE(RailMoveMapPartsInitRotationHook) {
-    static void Callback(RailMoveMapParts* actor, const al::ActorInitInfo& info) {
+    static void Callback(al::RailMoveMapParts* actor, const al::ActorInitInfo& info) {
         Orig(actor, info);
         bool isRotating = false;
         if(!al::tryGetArg(&isRotating, info, "EnableRotation")) {
@@ -295,7 +298,7 @@ HOOK_DEFINE_TRAMPOLINE(RailMoveMapPartsInitRotationHook) {
 };
 
 HOOK_DEFINE_TRAMPOLINE(RailMoveMapPartsInitSpeedHook) {
-    static void Callback(RailMoveMapParts* actor, const al::ActorInitInfo& info) {
+    static void Callback(al::RailMoveMapParts* actor, const al::ActorInitInfo& info) {
         Orig(actor, info);
         float mRotateSpeed = 0.0f;
         
@@ -306,7 +309,7 @@ HOOK_DEFINE_TRAMPOLINE(RailMoveMapPartsInitSpeedHook) {
 };
 
 HOOK_DEFINE_TRAMPOLINE(RailMoveMapPartsControlRotationHook) {
-    static void Callback(RailMoveMapParts* actor) {
+    static void Callback(al::RailMoveMapParts* actor) {
         Orig(actor);
         bool isRotating = *(((bool*) actor)+0x128);
         float mRotateSpeed = *(((float*) actor)+0x12C);
@@ -340,7 +343,7 @@ HOOK_DEFINE_TRAMPOLINE(initPlayerHook) {
         int initialHealth;
         if(al::tryGetArg(&initialHealth, actorInfo, "InitialHealth")) {
             GameDataHolderAccessor acc = GameDataHolderAccessor(player);
-            PlayerHitPointData* hitpoint = acc.mGameDataHolder->mPlayingFile->getPlayerHitPointData();
+            PlayerHitPointData* hitpoint = acc.mData->mGameDataFile->getPlayerHitPointData();
             hitpoint->mCurrentHealth = initialHealth;
         }
     }
@@ -349,9 +352,9 @@ HOOK_DEFINE_TRAMPOLINE(initPlayerHook) {
 HOOK_DEFINE_TRAMPOLINE(InitializeStageSceneLayoutHook) {
     static void Callback(StageSceneLayout* stageSceneLayout, const char* name, const al::LayoutInitInfo& initInfo, const al::PlayerHolder* playerHolder, const al::SubCameraRenderer* subCameraRenderer) {
 
+        Orig(stageSceneLayout, name, initInfo, playerHolder, subCameraRenderer);
         StarPieceCounter* starPieceCounter = new StarPieceCounter("CrazeyCounter", initInfo);
 
-        Orig(stageSceneLayout, name, initInfo, playerHolder, subCameraRenderer);
     }
 };
 
@@ -420,6 +423,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     exl::hook::Initialize();
 
     //R_ABORT_UNLESS(Logger::instance().init("yotoutlemondecpl", 3080).value);
+    Logger::instance().init(LOGGER_IP, 3080);
 
     runCodePatches();
 
@@ -454,8 +458,6 @@ extern "C" void exl_main(void* x0, void* x1) {
 
     InitializeStageSceneLayoutHook::InstallAtSymbol("_ZN16StageSceneLayoutC2EPKcRKN2al14LayoutInitInfoEPKNS2_12PlayerHolderEPKNS2_17SubCameraRendererE");
     exl::patch::CodePatcher(0x17C8DC).BranchInst(reinterpret_cast<void*>(bomb));
-
-    Logger::instance().init(LOGGER_IP, 3080);
 
     gravityPatches();
     gravityActorPatches();

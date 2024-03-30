@@ -1,5 +1,5 @@
 #include "diag/assert.hpp"
-#include "init.h"
+#include "nn/init.h"
 
 #include "qm/fs/qmFsDirectory.h"
 
@@ -24,13 +24,13 @@ bool directoryList(nn::fs::DirectoryEntry** entryList, s64* entryCount, const ch
     // Try to open directory
     nn::fs::DirectoryHandle handle;
     nn::Result r = nn::fs::OpenDirectory(&handle, path, nn::fs::OpenDirectoryMode_File);
-    if (R_FAILED(r))
+    if (r.IsFailure())
         return false;
 
     // Load amount of entries from directory
     s64 entryCountTemp;
     r = nn::fs::GetDirectoryEntryCount(&entryCountTemp, handle);
-    if (R_FAILED(r)) {
+    if (r.IsFailure()) {
         nn::fs::CloseDirectory(handle);
         return false;
     }
@@ -40,7 +40,7 @@ bool directoryList(nn::fs::DirectoryEntry** entryList, s64* entryCount, const ch
     r = nn::fs::ReadDirectory(&entryCountTemp, entryBuffer, handle, entryCountTemp);
     nn::fs::CloseDirectory(handle);
 
-    if (R_FAILED(r)) {
+    if (r.IsFailure()) {
         delete[] entryBuffer;
         return false;
     }

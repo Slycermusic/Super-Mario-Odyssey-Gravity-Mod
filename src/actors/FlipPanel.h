@@ -1,11 +1,11 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
+#include "Library/LiveActor/LiveActor.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/util/NerveUtil.h"
-#include "al/util/NerveSetupUtil.h"
+#include "Library/Nerve/NerveUtil.h"
+#include "Library/Nerve/NerveSetupUtil.h"
 #include "rs/util/SensorUtil.h"
-#include <sead/container/seadPtrArray.h>
+#include <container/seadPtrArray.h>
 
 class FlipPanel : public al::LiveActor {
 public:

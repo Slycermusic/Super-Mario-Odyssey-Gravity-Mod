@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sead/stream/seadRamWriteStream.h"
-#include "sead/stream/seadStream.h"
+#include "stream/seadRamWriteStream.h"
+#include "stream/seadStream.h"
 
 namespace qm {
 namespace fs {

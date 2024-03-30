@@ -1,5 +1,5 @@
 #include "al/util.hpp"
-#include "sead/heap/seadExpHeap.h"
+#include "heap/seadExpHeap.h"
 
 #include "logger/Logger.hpp"
 
@@ -48,19 +48,19 @@ namespace fs {
         return file;
     }
 
-    nn::Result Byaml::internalFinish(al::ByamlWriter* writer, const char* path)
+    bool Byaml::internalFinish(al::ByamlWriter* writer, const char* path)
     {
         if (!mWriteHeap) {
             Logger::log("! qm::fs cannot finish byaml write that was never started !\n");
-            return 1;
+            return false;
         }
 
         // Write to disk
         writer->write(mWriteStream);
         uint size = writer->calcPackSize();
-        nn::Result result = qm::fs::fileWrite(mWorkBuf, size, path);
+        bool result = qm::fs::fileWrite(mWorkBuf, size, path);
 
-        if (result.isFailure())
+        if (!result)
             Logger::log("Byaml write failed!\n");
 
         // Wipe all data

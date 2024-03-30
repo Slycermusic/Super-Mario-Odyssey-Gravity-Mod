@@ -1,7 +1,8 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
+#include "Library/LiveActor/LiveActor.h"
 #include "gravity/GravityArea.h"
+#include <container/seadPtrArray.h>
 
 class ActorGravityKeeper {
 public:

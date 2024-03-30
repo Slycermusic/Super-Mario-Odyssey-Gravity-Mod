@@ -1,9 +1,11 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
-#include "al/util/LiveActorUtil.h"
-#include "rs/util/SensorUtil.h"
-#include <sead/container/seadPtrArray.h>
+#include "Library/LiveActor/LiveActor.h"
+
+namespace al {
+class HitSensor;
+class SensorMsg;
+}
 
 class AssemblyBlockParts : public al::LiveActor {
 public:

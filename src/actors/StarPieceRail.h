@@ -1,9 +1,8 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
+#include "Library/LiveActor/LiveActor.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/util/NerveUtil.h"
-#include "al/sensor/SensorMsg.h"
+#include "Library/Nerve/NerveUtil.h"
 
 class StarPiece;
 

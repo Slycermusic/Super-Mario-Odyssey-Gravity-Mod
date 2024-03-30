@@ -1,9 +1,9 @@
 #pragma once
 
-#include "sead/heap/seadHeap.h"
+#include "heap/seadHeap.h"
 
 #include "nn/fs.h"
-#include "nn/result.h"
+#include "vapours/results.hpp"
 
 namespace qm {
 namespace fs {

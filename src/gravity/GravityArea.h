@@ -1,7 +1,11 @@
 #pragma once
 
-#include "al/LiveActor/LiveActor.h"
+#include "Library/LiveActor/LiveActor.h"
 #include "al/area/AreaObj.h"
+
+namespace al {
+class Rail;
+}
 
 class GravityArea : public al::AreaObj {
 public:

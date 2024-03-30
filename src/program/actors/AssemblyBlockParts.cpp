@@ -1,10 +1,9 @@
 #include "actors/AssemblyBlockParts.h"
 #include "al/util/OtherUtil.h"
 #include "logger/Logger.hpp"
-#include "sead/basis/seadNew.hpp"
+#include "basis/seadNew.h"
 #include "al/util/LiveActorUtil.h"
-#include "al/LiveActor/LiveActor.h"
-#include "al/sensor/IsMsg.h"
+#include "Library/LiveActor/LiveActor.h"
 #include "al/util.hpp"
 
 AssemblyBlockParts::AssemblyBlockParts(const char* name) : al::LiveActor(name) {}
