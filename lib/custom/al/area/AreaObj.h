@@ -3,8 +3,9 @@
 #include "Library/Area/AreaShape.h"
 #include "Library/Placement/PlacementInfo.h"
 #include "Library/HostIO/HioNode.h"
+#include "Library/Scene/IUseSceneObjHolder.h"
 #include "Library/Scene/SceneObjHolder.h"
-#include "Library/Stage/StageSwitchKeeper.h"
+#include "Library/Stage/IUseStageSwitch.h"
 #include "math/seadMatrix.h"
 #include "math/seadVector.h"
 

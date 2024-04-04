@@ -37,14 +37,16 @@ namespace ca {
 
 static al::NameToCreator<al::createArea> areaEntries[] = {
     // custom area entries
-    {"GravityParallelArea", &ca::createAreaObjFunction<GravityArea>},
-    {"GravitySegmentArea", &ca::createAreaObjFunction<GravityArea>},
-    {"GravityDiskTorusArea", &ca::createAreaObjFunction<GravityArea>},
-    {"GravityDiskArea", &ca::createAreaObjFunction<GravityArea>},
-    {"GravityConeArea", &ca::createAreaObjFunction<GravityArea>},
-    {"GravityCubeArea", &ca::createAreaObjFunction<GravityArea>},
-    {"GravityPointArea", &ca::createAreaObjFunction<GravityArea>},
-    {"GravityRailArea", &ca::createAreaObjFunction<GravityArea>},
+    {"CubeGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"DiskGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"DiskTorusGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"ConeGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"PlaneGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"PlaneInBoxGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"PlaneInCylinderGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"PointGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"SegmentGravityArea", &ca::createAreaObjFunction<GravityArea>},
+    {"WireGravityArea", &ca::createAreaObjFunction<GravityArea>},
     // base area entries
     {"AlignDirectionArea", &al::createAreaObjFunction<al::AreaObj>},
     {"AudioEffectChangeArea", &al::createAreaObjFunction<al::AreaObj>},

@@ -2,7 +2,7 @@
 #include "al/factory/AreaObjFactoryEntries100.h"
 #include "al/factory/ProjectAreaFactory.h"
 #include "al/util/LiveActorUtil.h"
-#include "gravity/ActorGravityKeeper.h"
+//#include "gravity/ActorGravityKeeper.h"
 #include "lib.hpp"
 #include "logger/Logger.hpp"
 #include "patches.hpp"
@@ -11,6 +11,9 @@
 #include "Library/Shadow/ShadowKeeper.h"
 
 #include "al/util.hpp"
+
+#include "Game/Gravity/GravityInfo.hpp"
+#include "Game/LiveActor/LiveActor.hpp"
 
 namespace al {
 class IUseCollision;
@@ -36,7 +39,7 @@ HOOK_DEFINE_TRAMPOLINE(AreaFactoryHook) {
 };
 
 void initGravityKeeper(al::LiveActor* actor) {
-    actor->mShadowKeeper->mActorGravityKeeper = new ActorGravityKeeper(actor);
+    //actor->mShadowKeeper->mActorGravityKeeper = new ActorGravityKeeper(actor);
 }
 
 HOOK_DEFINE_TRAMPOLINE(PoseKeeperTFGSV) {
@@ -70,10 +73,24 @@ HOOK_DEFINE_TRAMPOLINE(PoseKeeperTRGMSV) {
 HOOK_DEFINE_TRAMPOLINE(LiveActorMovement) {
     static void Callback(al::LiveActor* actor) {
         Orig(actor);
-        if (!actor->mFlags->isDead && (!actor->mFlags->isClipped || actor->mFlags->isDrawClipped)) {
-            ActorGravityKeeper* gravityKeeper = actor->mShadowKeeper->mActorGravityKeeper;
-            if (gravityKeeper && !al::isEqualString(typeid(*actor).name(), "N2al9FootPrintE"))
-                gravityKeeper->update();
+        if (!actor->mFlags->isDead && actor->mPoseKeeper && actor->mPoseKeeper->getGravityPtr()) {
+            TVec3f tgravity;
+            GravityInfo info;
+            LiveActor lactor = LiveActor(*actor);
+            MR::calcGravityVector(&lactor, &tgravity, &info, 0);
+            sead::Vector3f gravity = tgravity;
+            if(gravity.squaredLength() < 0.00001f) {
+                Logger::log("Using fallback gravity: down");
+                gravity = sead::Vector3f(0,-1,0);
+            }
+            gravity.normalize();
+            Logger::log("Gravity to set on %s: %.02f %.02f %.02f\n", typeid(*actor).name(), gravity.x, gravity.y, gravity.z);
+            al::ActorPoseKeeperBase* pose = actor->mPoseKeeper;
+            if(pose && pose->getGravityPtr())
+                *pose->getGravityPtr() = gravity;
+            else {
+                //Logger::log("Gravity not set on %s\n", typeid(*actor).name());
+            }
         }
     }
 };
@@ -81,15 +98,15 @@ HOOK_DEFINE_TRAMPOLINE(LiveActorMovement) {
 HOOK_DEFINE_TRAMPOLINE(ShadowKeeper) {
     static void Callback(al::ShadowKeeper* shadowKeeper) {
         Orig(shadowKeeper);
-        shadowKeeper->mActorGravityKeeper = nullptr;
+        //shadowKeeper->mActorGravityKeeper = nullptr;
     }
 };
 
 HOOK_DEFINE_TRAMPOLINE(ShadowKeeperAfterPlacement) {
     static void Callback(al::ShadowKeeper* shadowKeeper, void* arg) {
         Orig(shadowKeeper, arg);
-        ActorGravityKeeper* gravityKeeper = shadowKeeper->mActorGravityKeeper;
-        if (gravityKeeper) gravityKeeper->init();
+        //ActorGravityKeeper* gravityKeeper = shadowKeeper->mActorGravityKeeper;
+        //if (gravityKeeper) gravityKeeper->init();
     }
 };
 
@@ -212,17 +229,8 @@ HOOK_DEFINE_TRAMPOLINE(RotateQuatLocalDirDegreeEYFix) {
     }
 };
 
-HOOK_DEFINE_TRAMPOLINE(SetVelocityDebugger) {
-    static void Callback(al::LiveActor* actor, const sead::Vector3f& velocity) {
-        Orig(actor, velocity);
-        //Logger::log("Velocity of %s: %.02f, %.02f, %.02f\n", typeid(*actor).name(), velocity.x, velocity.y, velocity.z);
-    }
-};
-
 // to get name of objects: typeid(*actor).name()
 void gravityPatches() {
-    SetVelocityDebugger::InstallAtSymbol("_ZN2al11setVelocityEPNS_9LiveActorERKN4sead7Vector3IfEE");
-
     customIsFallNextMoveHook::InstallAtSymbol("_ZN2al14isFallNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
     customIsFallOrDamageCodeNextMoveHook::InstallAtSymbol("_ZN2al26isFallOrDamageCodeNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
 

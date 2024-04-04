@@ -18,8 +18,7 @@ public:
 public:
     ShadowMaskCtrl* mShadowMaskCtrl = nullptr;
     DepthShadowMapCtrl* mDepthShadowMapCtrl = nullptr;
-    ActorGravityKeeper* mActorGravityKeeper;
 };
-//static_assert(sizeof(ShadowKeeper) == 0x10);
+static_assert(sizeof(ShadowKeeper) == 0x10);
 
 }  // namespace al
