@@ -423,7 +423,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     exl::hook::Initialize();
 
     //R_ABORT_UNLESS(Logger::instance().init("yotoutlemondecpl", 3080).value);
-    Logger::instance().init(LOGGER_IP, 3080);
+    //Logger::instance().init(LOGGER_IP, 3080);
 
     runCodePatches();
 

@@ -38,7 +38,6 @@ public:
     void exeAttack(void);
     void exeCapHit(void);
     void exeBlowDown(void);
-    void exeExplode(void);
 
     ExternalForceKeeper* forceKeeper = nullptr;          // 0x108
 
@@ -48,6 +47,5 @@ public:
     sead::Vector3f futurePos = sead::Vector3f::zero;     // 0x12C
     sead::Vector3f groundNormal = sead::Vector3f::zero;  // 0x138
     unsigned int unkInt = 0;                             // 0x144
-    int explodeTimer = 0;                                // 0x148
 };
 

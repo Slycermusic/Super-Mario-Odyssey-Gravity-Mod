@@ -22,7 +22,6 @@ namespace {
     NERVE_IMPL(MechanicKoopaMini, Attack)
     NERVE_IMPL(MechanicKoopaMini, CapHit)
     NERVE_IMPL(MechanicKoopaMini, BlowDown)
-    NERVE_IMPL(MechanicKoopaMini, Explode)
 
     struct {
         NERVE_MAKE(MechanicKoopaMini, Wait);
@@ -35,7 +34,6 @@ namespace {
         NERVE_MAKE(MechanicKoopaMini, Attack);
         NERVE_MAKE(MechanicKoopaMini, CapHit);
         NERVE_MAKE(MechanicKoopaMini, BlowDown);
-        NERVE_MAKE(MechanicKoopaMini, Explode);
     } nrvMechanicKoopaMini;
 }
 
@@ -68,12 +66,6 @@ void MechanicKoopaMini::init(al::ActorInitInfo const &info)
     this->makeActorAlive();
     // }
 
-    al::setSensorRadius(this, "Explosion", 0.0f);
-    al::setSensorRadius(this, "ExplosionToPlayer", 0.0f);
-
-    al::invalidateHitSensor(this, "Explosion");
-    al::invalidateHitSensor(this, "ExplosionToPlayer");
-
     koopaMiniInstance = this; 
 }
 
@@ -98,6 +90,11 @@ bool MechanicKoopaMini::receiveMsg(const al::SensorMsg* message, al::HitSensor* 
         return true;
     }
 
+    if (rs::isMsgPlayerAndCapHipDropAll(message)) {
+        al::setNerve(this, &nrvMechanicKoopaMini.BlowDown);
+        return true;
+    }
+
     if(rs::isMsgCapReflect(message) && !al::isNerve(this, &nrvMechanicKoopaMini.BlowDown) && this->capHitCooldown <= 0) {
         rs::requestHitReactionToAttacker(message, target, source);
         al::setNerve(this, &nrvMechanicKoopaMini.CapHit);
@@ -119,18 +116,7 @@ bool MechanicKoopaMini::receiveMsg(const al::SensorMsg* message, al::HitSensor* 
 
 void MechanicKoopaMini::attackSensor(al::HitSensor* source, al::HitSensor* target) {
 
-    if(al::isNerve(this, &nrvMechanicKoopaMini.Explode)) {
-        if(al::isSensorPlayer(source)) {
-            if(al::isSensorName(target, "ExplosionToPlayer")) {
-                al::sendMsgExplosion(target, source, nullptr);
-            }
-        }else {
-            if(al::isSensorName(target, "Explosion")) {
-                al::sendMsgExplosion(target, source, nullptr);
-            }
-        }
-    }
-    else if (!al::isNerve(this, &nrvMechanicKoopaMini.BlowDown)) {
+    if (!al::isNerve(this, &nrvMechanicKoopaMini.BlowDown)) {
         if (!al::sendMsgEnemyAttack(target, source)) {
             rs::sendMsgPushToPlayer(target, source);
 
@@ -185,13 +171,6 @@ void MechanicKoopaMini::control() {
                 if(al::isNerve(this, &nrvMechanicKoopaMini.Wander)) {
                     al::validateClipping(this);
                 }
-            }
-        }
-
-        if(this->explodeTimer > 0) {
-            this->explodeTimer--;
-            if(this->explodeTimer == 0) {
-                al::setNerve(this, &nrvMechanicKoopaMini.Explode);
             }
         }
     }
@@ -456,10 +435,6 @@ void MechanicKoopaMini::exeChase(void)  // 0x40
         if(!al::isNearPlayer(this, 1300.0f)) {
             al::setNerve(this, &nrvMechanicKoopaMini.Wander);
             return;
-        }else if(al::isNearPlayer(this, 700.0f) && this->explodeTimer == 0) {
-            if(al::tryStartMclAnimIfNotPlaying(koopaMiniInstance, "SignExplosion")) {
-                this->explodeTimer = 180;
-            }
         }
     }else {
         if (this->airTime++ >= 4) {
@@ -493,32 +468,5 @@ void MechanicKoopaMini::exeLand(void)  // 0x48
         if (!al::isActionEnd(this))
             return;
         al::setNerve(this, &nrvMechanicKoopaMini.Wander);
-    }
-}
-
-void MechanicKoopaMini::exeExplode(void) {
-    if(al::isFirstStep(this)) {
-        al::setVelocityZero(this);
-
-        al::validateHitSensor(this, "Explosion");
-        al::validateHitSensor(this, "ExplosionToPlayer");
-
-        al::tryEmitEffect(this, "Explosion", nullptr);
-        al::setEffectAllScale(this, "Explosion", sead::Vector3f(2.0f,2.0f,2.0f));
-
-    }
-
-    al::setSensorRadius(this, "Explosion", al::lerpValue(0.0f, 200.0f, al::calcNerveRate(this, 5)));
-    al::setSensorRadius(this, "ExplosionToPlayer", al::lerpValue(0.0f, 100.0f, al::calcNerveRate(this, 5)));
-
-    if(al::isGreaterEqualStep(this, 5)) {
-
-        al::setSensorRadius(this, "Explosion", 0.0f);
-        al::setSensorRadius(this, "ExplosionToPlayer", 0.0f);
-
-        al::invalidateHitSensor(this, "Explosion");
-        al::invalidateHitSensor(this, "ExplosionToPlayer");
-
-        this->kill();
     }
 }
