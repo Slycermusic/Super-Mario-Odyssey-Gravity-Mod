@@ -2,19 +2,14 @@
 
 #include "Library/LiveActor/LiveActor.h"
 #include "al/physics/ExternalForceKeeper.h"
+#include "custom/al/States/EnemyStateWander.h"
 #include "al/util/LiveActorUtil.h"
-//#include "al/util/NerveUtil.h"
-//#include "al/util/SensorUtil.h"
-//#include "rs/util/SensorUtil.h"
-//#include "al/util/MathUtil.h"
-
 #include <basis/seadTypes.h>
 #include <container/seadPtrArray.h>
 #include <heap/seadHeap.h>
 #include <math/seadVector.h>
 
 class BombHei;
-extern BombHei *bombInstance;
 
 class BombHei : public al::LiveActor {
 public:
@@ -41,7 +36,7 @@ public:
     void exeExplode(void);
 
     ExternalForceKeeper* forceKeeper = nullptr;          // 0x108
-
+    EnemyStateWander* state = nullptr;                   // 0x110
     sead::Vector3f capPos = sead::Vector3f::zero;        // 0x118
     int capHitCooldown = 0;                              // 0x124
     int airTime = 0;                                     // 0x128

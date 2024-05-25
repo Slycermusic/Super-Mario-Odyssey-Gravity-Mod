@@ -14,9 +14,10 @@ class StarPieceCounter : public al::LayoutActor {
 public:
     StarPieceCounter(const char* name, const al::LayoutInitInfo& initInfo);
 
-    void appear();
-    void exeWait();
     void exeAppear();
-    void exeAdd();
+    void exeWait();
+    void exeEnd();
 
+    void appear() override;
+    void end();
 };

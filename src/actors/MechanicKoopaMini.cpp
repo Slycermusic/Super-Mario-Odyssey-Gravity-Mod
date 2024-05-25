@@ -1,4 +1,5 @@
 #include "actors/MechanicKoopaMini.h"
+#include "actors/MechanicKoopaMini.h"
 #include "Library/Nerve/NerveSetupUtil.h"
 #include "Library/Math/MathUtil.h"
 #include "Library/Math/MathAngleUtil.h"

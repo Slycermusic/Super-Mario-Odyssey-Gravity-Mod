@@ -8,12 +8,11 @@ namespace {
     using namespace al;
     NERVE_IMPL(StarPieceCounter, Wait);
     NERVE_IMPL(StarPieceCounter, Appear);
-    NERVE_IMPL(StarPieceCounter, Add);
-
+    NERVE_IMPL(StarPieceCounter, End);
     struct {
         NERVE_MAKE(StarPieceCounter, Wait);
         NERVE_MAKE(StarPieceCounter, Appear);
-        NERVE_MAKE(StarPieceCounter, Add);
+        NERVE_MAKE(StarPieceCounter, End);
     } nrvStarPieceCounter;
 }
 
@@ -27,33 +26,35 @@ StarPieceCounter::StarPieceCounter(const char* name, const al::LayoutInitInfo& i
     al::setPaneStringFormat(this, "TxtCounter", "%04d");
 }
 
+void StarPieceCounter::appear()
+{
+    al::LayoutActor::appear();
+    al::setNerve(this, &nrvStarPieceCounter.Appear);
+}
+
+void StarPieceCounter::end()
+{
+    al::setNerve(this, &nrvStarPieceCounter.End);
+}
+
+void StarPieceCounter::exeAppear() {
+    if (al::isFirstStep(this))
+        al::startAction(this, "Appear", nullptr);
+    if (al::isActionEnd(this, 0)) {
+        al::setNerve(this, &nrvStarPieceCounter.Wait);
+    }
+}
+
 void StarPieceCounter::exeWait()
 {
     if (al::isFirstStep(this))
         al::startAction(this, "Wait", nullptr);
 }
 
-void StarPieceCounter::exeAppear() {
-    if (al::isActionEnd(this, 0)) {
-        al::setNerve(this, &nrvStarPieceCounter.Wait);
-    }
-}
-
-void StarPieceCounter::exeAdd() {
-
-    if (al::isFirstStep(this)) {
-        al::startAction(this, "Add", nullptr);
-    }
-
-    if (al::isActionEnd(this, 0)) {
-        al::setNerve(this, &nrvStarPieceCounter.Wait);
-    }
-}
-
-void StarPieceCounter::appear()
+void StarPieceCounter::exeEnd()
 {
-    al::startAction(this, "Appear", 0); 
-    al::setNerve(this, &nrvStarPieceCounter.Appear);
-
-    al::LayoutActor::appear();
+    if (al::isFirstStep(this))
+        al::startAction(this, "End", nullptr);
+    if (al::isActionEnd(this, nullptr))
+        al::LayoutActor::kill();
 }

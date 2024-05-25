@@ -10,12 +10,11 @@
 #include "Library/LiveActor/ActorMovementFunction.h"
 #include "Library/LiveActor/ActorPoseKeeper.h"
 #include "Player/PlayerActorHakoniwa.h"
+#include "custom/al/States/EnemyStateWander.h"
 
 #include "al/util/SensorUtil.h"
 
 #include "custom/rs/util/SensorUtil.h"
-
-BombHei *bombInstance;
 
 namespace {
     using namespace al;
@@ -53,27 +52,14 @@ typedef void (BombHei::*functorType)();
 void BombHei::init(al::ActorInitInfo const &info)
 {
     al::initActorWithArchiveName(this, info, "BombHei", nullptr);
-
-    // if (al::isValidStageSwitch(this, "SwitchStart")) {
-    //     gLogger->LOG("Valid.\n");
-    //     al::initNerve(this, &nrvBombHeiWait, 1);
-    // } else {
-    //     gLogger->LOG("Invalid.\n");
     al::initNerve(this, &nrvBombHei.Wander, 1);
-    // }    
+
+    this->state = new EnemyStateWander(this, "Walk");
+    al::initNerveState(this, this->state, &nrvBombHei.Wander, "徘徊");
 
     this->forceKeeper = new ExternalForceKeeper();
 
-    //gLogger->LOG("Registering Listen Appear functor.\n");
-
-    // if (al::listenStageSwitchOnAppear(
-    //         this, al::FunctorV0M<CustomTogezo*, functorType>(this, &and CustomTogezo::listenAppear))) {
-    //     gLogger->LOG("Switch On Activated. Making Actor Dead.\n");   
-    //     this->makeActorDead();
-    // } else {
-        //gLogger->LOG("Switch On not Active. Making Actor Alive.\n");   
     this->makeActorAlive();
-    // }
 
     al::setSensorRadius(this, "Explosion", 0.0f);
     al::setSensorRadius(this, "ExplosionToPlayer", 0.0f);
@@ -81,7 +67,6 @@ void BombHei::init(al::ActorInitInfo const &info)
     al::invalidateHitSensor(this, "Explosion");
     al::invalidateHitSensor(this, "ExplosionToPlayer");
 
-    bombInstance = this; 
 }
 
 void BombHei::listenAppear() {
@@ -161,8 +146,6 @@ void BombHei::attackSensor(al::HitSensor* source, al::HitSensor* target) {
         al::setNerve(this, &nrvBombHei.Attack);
     }
 }
-
-// todo: no idea what 0x144 or 0x124 are
 
 void BombHei::control() {
     
@@ -472,7 +455,7 @@ void BombHei::exeChase(void)  // 0x40
             al::setNerve(this, &nrvBombHei.Wander);
             return;
         }else if(al::isNearPlayer(this, 700.0f) && this->explodeTimer == 0) {
-            if(al::tryStartMclAnimIfNotPlaying(bombInstance, "SignExplosion")) {
+            if(al::tryStartMclAnimIfNotPlaying(this, "SignExplosion")) {
                 this->explodeTimer = 180;
             }
         }

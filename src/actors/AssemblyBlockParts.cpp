@@ -5,6 +5,7 @@
 #include "al/util/LiveActorUtil.h"
 #include "Library/LiveActor/LiveActor.h"
 #include "al/util.hpp"
+#include "Player/PlayerActorHakoniwa.h"
 
 AssemblyBlockParts::AssemblyBlockParts(const char* name) : al::LiveActor(name) {}
 
@@ -27,14 +28,17 @@ void AssemblyBlockParts::calcAnim() {
 
 void AssemblyBlockParts::movement() {
     al::LiveActor::movement();
-//    PlayerActorHakoniwa* player = (PlayerActorHakoniwa*)al::getPlayerActor(actor, 0)
-//    sead::Vector3f actorTrans = al::getTrans(player);
-//    sead::Vector3f& ownPos = this.al::getTrans();
-//    if((actorTrans - ownPos).length() < threshold) {
-//        this.setPos(originalPos);
-//    } else {
-//        this.setPos(awayPos);
-//    }
+    PlayerActorHakoniwa* pActor = al::tryFindNearestPlayerActor(this);
+    sead::Vector3f objectTrans = al::getTrans(this);
+    if(pActor) {
+        if(al::isNearPlayer(this, 1300.0f)) {
+            al::onStageSwitch(this, "KeyMoveNext");
+        }
+    }
+    //next();
+    //calcLerpKeyTrans(this);
+    //calcSlerpKeyQuat(this);
+
 }
 
 void AssemblyBlockParts::appear() {
