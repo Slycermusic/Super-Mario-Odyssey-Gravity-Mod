@@ -12,7 +12,13 @@ static PlanetGravityManager* pManager = new PlanetGravityManager("PlanetGravityM
 
 namespace {
 	void getJMapInfoArgPlus(const JMapInfoIter &rIter, const char *pFieldName, f32 *pDest) {
+		f32 result;
+		bool read = al::tryGetArg(&result, rIter, pFieldName);
 
+		// Set result if applicable
+		if (read && result >= 0.0f) {
+			*pDest = result;
+		}
 	}
 
 	void getJMapInfoArgPlus(const JMapInfoIter &rIter, const char *pFieldName, s32 *pDest) {
