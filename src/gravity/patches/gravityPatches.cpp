@@ -229,8 +229,15 @@ HOOK_DEFINE_TRAMPOLINE(RotateQuatLocalDirDegreeEYFix) {
     }
 };
 
+HOOK_DEFINE_INLINE(resetGravityManager) {
+    static void Callback(exl::hook::InlineCtx* ctx) {
+        MR::resetGravityManager();
+    }
+};
+
 // to get name of objects: typeid(*actor).name()
 void gravityPatches() {
+    resetGravityManager::InstallAtOffset(0x4C8640);  // StageScene::init
     customIsFallNextMoveHook::InstallAtSymbol("_ZN2al14isFallNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
     customIsFallOrDamageCodeNextMoveHook::InstallAtSymbol("_ZN2al26isFallOrDamageCodeNextMoveEPKNS_9LiveActorERKN4sead7Vector3IfEEff");
 

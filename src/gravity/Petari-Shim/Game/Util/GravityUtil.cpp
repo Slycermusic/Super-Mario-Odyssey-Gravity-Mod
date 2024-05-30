@@ -154,4 +154,9 @@ namespace MR {
 			}
 		}
 	}
+
+	void resetGravityManager() {
+		delete pManager;
+		pManager = new PlanetGravityManager("PlanetGravityManager");
+	}
 }
