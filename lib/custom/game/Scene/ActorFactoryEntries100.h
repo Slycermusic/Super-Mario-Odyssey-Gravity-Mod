@@ -8,21 +8,21 @@
 #include "actors/StarPiece.h"
 #include "actors/StarPieceRail.h"
 #include "actors/AsteroidBlockRotateStep.h"
-#include "actors/BlueStarCupsulePlanet.h"
+//#include "actors/BlueStarCupsulePlanet.h"
 
-#include "actors/StinkBugSmall.h"
-#include "actors/SunakazeKun.h"
+//#include "actors/StinkBugSmall.h"
+//#include "actors/SunakazeKun.h"
 //#include "actors/SamboHead.h"
-#include "actors/Unizo.h"
-#include "actors/UnizoLand.h"
-#include "actors/BegomanSpike.h"
-#include "actors/BegomanSpikeHead.h"
+//#include "actors/Unizo.h"
+//#include "actors/UnizoLand.h"
+//#include "actors/BegomanSpike.h"
+//#include "actors/BegomanSpikeHead.h"
 //#include "actors/BegomanBaby.h"
-#include "actors/BombHei.h"
+//#include "actors/BombHei.h"
 //#include "actors/MechanicKoopaMini.h"
-#include "actors/NokonokoLand.h"
-#include "actors/Teresa.h"
-#include "actors/BombTeresa.h"
+//#include "actors/NokonokoLand.h"
+//#include "actors/Teresa.h"
+//#include "actors/BombTeresa.h"
 //#include "actors/IceMeramera.h"
 //#include "actors/FireMeramera.h"
 //#include "actors/JumpSpider.h"
@@ -108,22 +108,22 @@ static al::NameToCreator<al::createActor> actorEntries[] = {
     {"StarPiece", &ca::createCustomActor<StarPiece>},
     {"StarPieceRail", &ca::createCustomActor<StarPieceRail>},
     {"AsteroidBlockRotateStep", &ca::createCustomActor<AsteroidBlockRotateStep>},
-    {"BlueStarCupsulePlanet", &ca::createCustomActor<BlueStarCupsulePlanet>},
+    //{"BlueStarCupsulePlanet", &ca::createCustomActor<BlueStarCupsulePlanet>},
 
     // CUSTOM ENEMIES
-    {"StinkBugSmall", &ca::createCustomActor<StinkBugSmall>},
-    {"SunakazeKun", &ca::createCustomActor<SunakazeKun>},
+    //{"StinkBugSmall", &ca::createCustomActor<StinkBugSmall>},
+    //{"SunakazeKun", &ca::createCustomActor<SunakazeKun>},
     //{"SamboHead", &ca::createCustomActor<SamboHead>},
-    {"Unizo", &ca::createCustomActor<Unizo>},
-    {"UnizoLand", &ca::createCustomActor<UnizoLand>},
-    {"BegomanSpike", &ca::createCustomActor<BegomanSpike>},
-    {"BegomanSpikeHead", &ca::createCustomActor<BegomanSpikeHead>},
+    //{"Unizo", &ca::createCustomActor<Unizo>},
+    //{"UnizoLand", &ca::createCustomActor<UnizoLand>},
+    //{"BegomanSpike", &ca::createCustomActor<BegomanSpike>},
+    //{"BegomanSpikeHead", &ca::createCustomActor<BegomanSpikeHead>},
     //{"BegomanBaby", &ca::createCustomActor<BegomanBaby>},
-    {"BombHei", &ca::createCustomActor<BombHei>},
+    //{"BombHei", &ca::createCustomActor<BombHei>},
     //{"MechanicKoopaMini", &ca::createCustomActor<MechanicKoopaMini>},
-    {"NokonokoLand", &ca::createCustomActor<NokonokoLand>},
-    {"Teresa", &ca::createCustomActor<Teresa>},
-    {"BombTeresa", &ca::createCustomActor<BombTeresa>},
+    //{"NokonokoLand", &ca::createCustomActor<NokonokoLand>},
+    //{"Teresa", &ca::createCustomActor<Teresa>},
+    //{"BombTeresa", &ca::createCustomActor<BombTeresa>},
     //{"IceMeramera", &ca::createCustomActor<IceMeramera>},
     //{"FireMeramera", &ca::createCustomActor<FireMeramera>},
     //{"JumpSpider", &ca::createCustomActor<JumpSpider>},
