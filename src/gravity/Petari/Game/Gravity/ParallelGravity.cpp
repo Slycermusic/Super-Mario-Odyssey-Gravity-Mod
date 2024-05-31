@@ -31,9 +31,8 @@ bool ParallelGravity::calcOwnGravityVector(TVec3f *pDest, f32 *pScalar, const TV
 	return true;
 }
 
-#ifdef NON_MATCHING
 void ParallelGravity::updateMtx(const TPos3f &rMtx) {
-	rMtx.mult33Inline(mPlaneUpVec, mWorldPlaneUpVec);
+	rMtx.mult33(mPlaneUpVec, mWorldPlaneUpVec);
 	rMtx.mult(mPlanePosition, mWorldPlanePosition);
 	MR::normalizeOrZero(&mWorldPlaneUpVec);
 
@@ -49,7 +48,6 @@ void ParallelGravity::updateMtx(const TPos3f &rMtx) {
 		mExtentZ = tempDir.squared();
 	}
 }
-#endif
 
 void ParallelGravity::setPlane(const TVec3f &rPlaneUp, const TVec3f &rPlanePos) {
 	// Up vector
@@ -61,18 +59,10 @@ void ParallelGravity::setPlane(const TVec3f &rPlaneUp, const TVec3f &rPlanePos) 
 	mPlanePosition = rPlanePos;
 }
 
-#ifdef NON_MATCHING
 void ParallelGravity::setRangeBox(const TPos3f &rMtx) {
-	const u64* pSrc = reinterpret_cast<const u64*>(&rMtx);
-	u64* pDest = reinterpret_cast<u64*>(&mLocalMtx);
-
-	for (s32 i = 6; i >= 1; i--) {
-		*pDest++ = *pSrc++;
-	}
-
+    mLocalMtx = rMtx;
 	updateIdentityMtx();
 }
-#endif
 
 void ParallelGravity::setRangeCylinder(f32 radius, f32 height) {
 	mCylinderRadius = radius;
