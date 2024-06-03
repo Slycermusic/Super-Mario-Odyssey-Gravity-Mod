@@ -10,9 +10,9 @@
 #include "actors/AsteroidBlockRotateStep.h"
 //#include "actors/BlueStarCupsulePlanet.h"
 
-//#include "actors/StinkBugSmall.h"
+#include "actors/StinkBugSmall.h"
 //#include "actors/SunakazeKun.h"
-//#include "actors/SamboHead.h"
+#include "actors/SamboHead.h"
 //#include "actors/Unizo.h"
 //#include "actors/UnizoLand.h"
 //#include "actors/BegomanSpike.h"
@@ -111,9 +111,9 @@ static al::NameToCreator<al::createActor> actorEntries[] = {
     //{"BlueStarCupsulePlanet", &ca::createCustomActor<BlueStarCupsulePlanet>},
 
     // CUSTOM ENEMIES
-    //{"StinkBugSmall", &ca::createCustomActor<StinkBugSmall>},
+    {"StinkBugSmall", &ca::createCustomActor<StinkBugSmall>},
     //{"SunakazeKun", &ca::createCustomActor<SunakazeKun>},
-    //{"SamboHead", &ca::createCustomActor<SamboHead>},
+    {"SamboHead", &ca::createCustomActor<SamboHead>},
     //{"Unizo", &ca::createCustomActor<Unizo>},
     //{"UnizoLand", &ca::createCustomActor<UnizoLand>},
     //{"BegomanSpike", &ca::createCustomActor<BegomanSpike>},

@@ -67,6 +67,8 @@ int CubeGravity::calcGravityArea(const TVec3f &rPosition) const { // Area as in 
 	float xDirDistance = relativePosition.dot(dirX) / lenX, yDirDistance = relativePosition.dot(dirY) / lenY, zDirDistance = relativePosition.dot(dirZ) / lenZ;
 
 	Logger::log("xDirDistance: %f, yDirDistance: %f, zDirDistance: %f\n", xDirDistance, yDirDistance, zDirDistance);
+	
+	Logger::log("LenX: %f, LenY: %f, LenZ: %f\n", lenX, lenY, lenZ);
 
 	if(xDirDistance < -lenX) {
 		if((mActiveFaces & 2) != 2) return -1;

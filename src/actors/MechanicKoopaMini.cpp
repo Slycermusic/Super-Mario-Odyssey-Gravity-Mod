@@ -1,15 +1,20 @@
 #include "actors/MechanicKoopaMini.h"
-#include "actors/MechanicKoopaMini.h"
-#include "Library/Nerve/NerveSetupUtil.h"
-#include "Library/Math/MathUtil.h"
-#include "Library/Math/MathAngleUtil.h"
-#include "Library/Math/MathLengthUtil.h"
+#include "al/util.hpp"
 #include "Library/Collision/Collider.h"
+#include "Library/Nerve/NerveSetupUtil.h"
+#include "Library/Nerve/NerveUtil.h"
+#include "Library/Math/MathAngleUtil.h"
+#include "Library/Math/MathUtil.h"
+#include "Library/Math/MathLengthUtil.h"
 #include "Library/LiveActor/ActorSensorFunction.h"
 #include "Library/LiveActor/ActorMovementFunction.h"
 #include "Library/LiveActor/ActorPoseKeeper.h"
+#include "Player/PlayerActorHakoniwa.h"
+#include "custom/al/States/EnemyStateWander.h"
 
-MechanicKoopaMini *koopaMiniInstance;
+#include "al/util/SensorUtil.h"
+
+#include "custom/rs/util/SensorUtil.h"
 
 namespace {
     using namespace al;
@@ -23,6 +28,7 @@ namespace {
     NERVE_IMPL(MechanicKoopaMini, Attack)
     NERVE_IMPL(MechanicKoopaMini, CapHit)
     NERVE_IMPL(MechanicKoopaMini, BlowDown)
+    NERVE_IMPL(MechanicKoopaMini, Explode)
 
     struct {
         NERVE_MAKE(MechanicKoopaMini, Wait);
@@ -35,6 +41,7 @@ namespace {
         NERVE_MAKE(MechanicKoopaMini, Attack);
         NERVE_MAKE(MechanicKoopaMini, CapHit);
         NERVE_MAKE(MechanicKoopaMini, BlowDown);
+        NERVE_MAKE(MechanicKoopaMini, Explode);
     } nrvMechanicKoopaMini;
 }
 
@@ -45,29 +52,21 @@ typedef void (MechanicKoopaMini::*functorType)();
 void MechanicKoopaMini::init(al::ActorInitInfo const &info)
 {
     al::initActorWithArchiveName(this, info, "MechanicKoopaMini", nullptr);
-
-    // if (al::isValidStageSwitch(this, "SwitchStart")) {
-    //     gLogger->LOG("Valid.\n");
-    //     al::initNerve(this, &nrvBombHeiWait, 1);
-    // } else {
-    //     gLogger->LOG("Invalid.\n");
     al::initNerve(this, &nrvMechanicKoopaMini.Wander, 1);
-    // }    
+
+    this->state = new EnemyStateWander(this, "Walk");
+    al::initNerveState(this, this->state, &nrvMechanicKoopaMini.Wander, "徘徊");
 
     this->forceKeeper = new ExternalForceKeeper();
 
-    //gLogger->LOG("Registering Listen Appear functor.\n");
-
-    // if (al::listenStageSwitchOnAppear(
-    //         this, al::FunctorV0M<CustomTogezo*, functorType>(this, &and CustomTogezo::listenAppear))) {
-    //     gLogger->LOG("Switch On Activated. Making Actor Dead.\n");   
-    //     this->makeActorDead();
-    // } else {
-        //gLogger->LOG("Switch On not Active. Making Actor Alive.\n");   
     this->makeActorAlive();
-    // }
 
-    koopaMiniInstance = this; 
+    al::setSensorRadius(this, "Explosion", 100.0f);
+    al::setSensorRadius(this, "ExplosionToPlayer", 100.0f);
+
+    al::invalidateHitSensor(this, "Explosion");
+    al::invalidateHitSensor(this, "ExplosionToPlayer");
+
 }
 
 void MechanicKoopaMini::listenAppear() {
@@ -91,16 +90,19 @@ bool MechanicKoopaMini::receiveMsg(const al::SensorMsg* message, al::HitSensor* 
         return true;
     }
 
-    if (rs::isMsgPlayerAndCapHipDropAll(message)) {
-        al::setNerve(this, &nrvMechanicKoopaMini.BlowDown);
-        return true;
-    }
-
     if(rs::isMsgCapReflect(message) && !al::isNerve(this, &nrvMechanicKoopaMini.BlowDown) && this->capHitCooldown <= 0) {
         rs::requestHitReactionToAttacker(message, target, source);
         al::setNerve(this, &nrvMechanicKoopaMini.CapHit);
         this->capPos = al::getSensorPos(source);
         this->capHitCooldown = 10;
+        return true;
+    }
+
+    if((rs::isMsgBlowDown(message) || rs::isMsgDonsukeAttack(message)) && !al::isNerve(this, &nrvMechanicKoopaMini.BlowDown)) {
+        al::setVelocityBlowAttackAndTurnToTarget(this, al::getActorTrans(source), 15.0f, 35.0f);
+        rs::setAppearItemFactorAndOffsetByMsg(this, message, source);
+        rs::requestHitReactionToAttacker(message, target, source);
+        al::setNerve(this, &nrvMechanicKoopaMini.BlowDown);
         return true;
     }
 
@@ -117,7 +119,18 @@ bool MechanicKoopaMini::receiveMsg(const al::SensorMsg* message, al::HitSensor* 
 
 void MechanicKoopaMini::attackSensor(al::HitSensor* source, al::HitSensor* target) {
 
-    if (!al::isNerve(this, &nrvMechanicKoopaMini.BlowDown)) {
+    if(al::isNerve(this, &nrvMechanicKoopaMini.Explode)) {
+        if(al::isSensorPlayer(source)) {
+            if(al::isSensorName(target, "ExplosionToPlayer")) {
+                al::sendMsgExplosion(target, source, nullptr);
+            }
+        }else {
+            if(al::isSensorName(target, "Explosion")) {
+                al::sendMsgExplosion(target, source, nullptr);
+            }
+        }
+    }
+    else if (!al::isNerve(this, &nrvMechanicKoopaMini.BlowDown)) {
         if (!al::sendMsgEnemyAttack(target, source)) {
             rs::sendMsgPushToPlayer(target, source);
 
@@ -133,8 +146,6 @@ void MechanicKoopaMini::attackSensor(al::HitSensor* source, al::HitSensor* targe
         al::setNerve(this, &nrvMechanicKoopaMini.Attack);
     }
 }
-
-// todo: no idea what 0x144 or 0x124 are
 
 void MechanicKoopaMini::control() {
     
@@ -172,6 +183,13 @@ void MechanicKoopaMini::control() {
                 if(al::isNerve(this, &nrvMechanicKoopaMini.Wander)) {
                     al::validateClipping(this);
                 }
+            }
+        }
+
+        if(this->explodeTimer > 0) {
+            this->explodeTimer--;
+            if(this->explodeTimer == 0) {
+                al::setNerve(this, &nrvMechanicKoopaMini.Explode);
             }
         }
     }
@@ -436,6 +454,10 @@ void MechanicKoopaMini::exeChase(void)  // 0x40
         if(!al::isNearPlayer(this, 1300.0f)) {
             al::setNerve(this, &nrvMechanicKoopaMini.Wander);
             return;
+        }else if(al::isNearPlayer(this, 700.0f) && this->explodeTimer == 0) {
+            if(al::tryStartMclAnimIfNotPlaying(this, "SignExplosion")) {
+                this->explodeTimer = 180;
+            }
         }
     }else {
         if (this->airTime++ >= 4) {
@@ -469,5 +491,32 @@ void MechanicKoopaMini::exeLand(void)  // 0x48
         if (!al::isActionEnd(this))
             return;
         al::setNerve(this, &nrvMechanicKoopaMini.Wander);
+    }
+}
+
+void MechanicKoopaMini::exeExplode(void) {
+    if(al::isFirstStep(this)) {
+        al::setVelocityZero(this);
+
+        al::validateHitSensor(this, "Explosion");
+        al::validateHitSensor(this, "ExplosionToPlayer");
+
+        al::tryEmitEffect(this, "Explosion", nullptr);
+        al::setEffectAllScale(this, "Explosion", sead::Vector3f(2.0f,2.0f,2.0f));
+
+    }
+
+    al::setSensorRadius(this, "Explosion", al::lerpValue(0.0f, 200.0f, al::calcNerveRate(this, 5)));
+    al::setSensorRadius(this, "ExplosionToPlayer", al::lerpValue(0.0f, 100.0f, al::calcNerveRate(this, 5)));
+
+    if(al::isGreaterEqualStep(this, 5)) {
+
+        al::setSensorRadius(this, "Explosion", 0.0f);
+        al::setSensorRadius(this, "ExplosionToPlayer", 0.0f);
+
+        al::invalidateHitSensor(this, "Explosion");
+        al::invalidateHitSensor(this, "ExplosionToPlayer");
+
+        this->kill();
     }
 }

@@ -77,19 +77,21 @@ HOOK_DEFINE_TRAMPOLINE(LiveActorMovement) {
             TVec3f tgravity;
             GravityInfo info;
             LiveActor lactor = LiveActor(*actor);
+
             MR::calcGravityVector(&lactor, &tgravity, &info, 0);
             sead::Vector3f gravity = tgravity;
             if(gravity.squaredLength() < 0.00001f) {
-                Logger::log("Using fallback gravity: down");
-                gravity = sead::Vector3f(0,-1,0);
+                Logger::log("No gravity, keeping old value\n");
+                return;
             }
             gravity.normalize();
             Logger::log("Gravity to set on %s: %.02f %.02f %.02f\n", typeid(*actor).name(), gravity.x, gravity.y, gravity.z);
+
             al::ActorPoseKeeperBase* pose = actor->mPoseKeeper;
             if(pose && pose->getGravityPtr())
                 *pose->getGravityPtr() = gravity;
             else {
-                //Logger::log("Gravity not set on %s\n", typeid(*actor).name());
+                Logger::log("Gravity not set on %s\n", typeid(*actor).name());
             }
         }
     }

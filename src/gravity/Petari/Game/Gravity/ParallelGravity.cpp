@@ -32,7 +32,7 @@ bool ParallelGravity::calcOwnGravityVector(TVec3f *pDest, f32 *pScalar, const TV
 }
 
 void ParallelGravity::updateMtx(const TPos3f &rMtx) {
-	rMtx.mult33(mPlaneUpVec, mWorldPlaneUpVec);
+	rMtx.mult(mPlaneUpVec, mWorldPlaneUpVec);
 	rMtx.mult(mPlanePosition, mWorldPlanePosition);
 	MR::normalizeOrZero(&mWorldPlaneUpVec);
 
@@ -47,6 +47,7 @@ void ParallelGravity::updateMtx(const TPos3f &rMtx) {
 		mWorldMtx.getZDir(tempDir);
 		mExtentZ = tempDir.squared();
 	}
+
 }
 
 void ParallelGravity::setPlane(const TVec3f &rPlaneUp, const TVec3f &rPlanePos) {
