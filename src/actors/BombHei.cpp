@@ -61,8 +61,8 @@ void BombHei::init(al::ActorInitInfo const &info)
 
     this->makeActorAlive();
 
-    al::setSensorRadius(this, "Explosion", 100.0f);
-    al::setSensorRadius(this, "ExplosionToPlayer", 100.0f);
+    al::setSensorRadius(this, "Explosion", 0.0f);
+    al::setSensorRadius(this, "ExplosionToPlayer", 0.0f);
 
     al::invalidateHitSensor(this, "Explosion");
     al::invalidateHitSensor(this, "ExplosionToPlayer");
