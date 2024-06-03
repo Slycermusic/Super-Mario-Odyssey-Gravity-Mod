@@ -40,10 +40,11 @@ This mod only works on v1.0 of the game, and requires building yourself using cm
 # Credits
 
 - Slycer - made the GEG port
-- [CraftyBoss](https://github.com/CraftyBoss) - helped create the `SuperSpinDriver` actor and custom camera 
+- [CraftyBoss](https://github.com/CraftyBoss) - helped create the custom camera 
 - [exlaunch](https://github.com/shadowninja108/exlaunch/)
 - [exlaunch-cmake](https://github.com/EngineLessCC/exlaunch-cmake/)
 - [BDSP](https://github.com/Martmists-GH/BDSP)
 - [Sanae](https://github.com/Sanae6)
 - [Atmosphère](https://github.com/Atmosphere-NX/Atmosphere)
 - [oss-rtld](https://github.com/Thog/oss-rtld)
+- [The SMG Community](https://github.com/SMGCommunity/Petari)
