@@ -25,14 +25,15 @@
 #include "System/GameDrawInfo.h"
 #include "game/Layouts/MapLayout.h"
 #include "game/SceneObjs/ReflectBomb.h"
+#include "game/SceneObjs/CapSlotNpc.h"
 #include "SceneObjs/RailMoveMapParts.h"
+#include "SceneObjs/KuriboHack.h"
 #include "Scene/StageScene.h"
 #include "System/GameSystem.h"
 #include "System/GameDataFile.h"
 #include "System/GameFrameWorkNx.h"
 #include "System/Application.h"
 #include "Sequence/HakoniwaSequence.h"
-#include "qm.h"
 #include "al/util/OtherUtil.h"
 
 #include "al/util.hpp"
@@ -230,10 +231,6 @@ HOOK_DEFINE_TRAMPOLINE(GameSystemInit) {
             sead::DebugFontMgrJis1Nvn::sInstance->initialize(curHeap, DBG_SHADER_PATH, DBG_FONT_PATH, DBG_TBL_PATH, 0x100000);
         }
 
-        // Create heap tree
-        #define HEAP_SIZE_MB(val) val * 1000000
-        qm::qmHeap = sead::ExpHeap::create(HEAP_SIZE_MB(2), "qmHeap", al::getStationedHeap(), 8, sead::Heap::HeapDirection::cHeapDirection_Forward, false);
-
         sead::TextWriter::setDefaultFont(sead::DebugFontMgrJis1Nvn::sInstance);
 
         al::GameDrawInfo* drawInfo = Application::instance()->mGameDrawInfo;
@@ -319,17 +316,6 @@ HOOK_DEFINE_TRAMPOLINE(RailMoveMapPartsControlRotationHook) {
     }
 };
 
-//HOOK_DEFINE_TRAMPOLINE(MoonBasementFallObjexeFallGravityHook) {
-//    static void Callback(MoonBasementFallObj* actor, const al::ActorInitInfo& info, al::LiveActor* parent, char const* name) {
-//        Orig(actor, info, parent, name);
-//        bool invertedGravity = false;
-//        if(!al::tryGetArg(&invertedGravity, info, "InvertedGravity")) {
-//        invertedGravity = false;
-//        }
-//        *(((bool*) actor)+0x86C) = invertedGravity;
-//    }
-//};
-
 void moon(al::LiveActor* actor, float num){
     bool invertedGravity = *(((bool*) actor)+0x86C);
     if(invertedGravity) return;
@@ -358,52 +344,29 @@ HOOK_DEFINE_TRAMPOLINE(InitializeStageSceneLayoutHook) {
     }
 };
 
-//0x14B1FC
+HOOK_DEFINE_TRAMPOLINE(kuriboArchiveInitHook) {
+    static void Callback(al::LiveActor* actor, const al::ActorInitInfo& actorInfo, const sead::SafeString& customName, const char* x) {
+        if(al::isEqualString(customName, "KuriboGold")) {
+            const char* newName = nullptr;
+            al::tryGetStringArg(&newName, actorInfo, "CustomArchive");
+            if(newName)
+                Orig(actor, actorInfo, newName, x);
+            else
+                Orig(actor, actorInfo, customName, x);
+        } else {
+            Orig(actor, actorInfo, customName, x);
+        }
+    }
+};
 
-//void BeeCostumeChangeIsInWater(StageScene* scene) {
-//    GameDataHolderAccessor accessor = scene->mHolder;
-//    GameDataHolderWriter writer = scene->mWriter;
-//
-//    auto actor = rs::getPlayerActor(scene);
-//    
-//    bool isInWater = false;
-//    
-//    if(SeKeeper::isInWater(isInWater);) {
-//        if(al::isEqualString(GameDataFunction::getCurrentCostumeTypeName(accessor), "MarioBee") && al::isEqualString(GameDataFunction::getCurrentCapTypeName(accessor), "MarioBee")) 
-//        { 
-//            GameDataFunction::wearCostume(mWriter, "Mario");
-//            GameDataFunction::wearCap(mWriter, "Mario");
-//        }
-//    }
-//}
 
-//void FireMario(StageScene* scene) {
-//
-//    GameDataHolderAccessor accessor = scene->mHolder;
-//
-//    auto actor = rs::getPlayerActor(scene);
-//
-//    static bool isNoclip = false;
-//
-//    if(al::isPadTriggerRight(-1)) {
-//        if(al::isEqualString(GameDataFunction::getCurrentCostumeTypeName(accessor), "MarioFire") && al::isEqualString(GameDataFunction::getCurrentCapTypeName(accessor), "MarioFire")) 
-//        { 
-//            isNoclip = !isNoclip;
-//
-//            if(!isNoclip) {
-//                al::onCollide(actor);
-//                actor->endDemoPuppetable();
-//            } else {
-//                actor->startDemoPuppetable();
-//            }
-//        }
-//
-//    }
-//
-//    if(isNoclip) {
-//        graNoclipCode(actor);
-//    }
-//}
+//0x14B1FC InitActorWithArchiveName for Kuribo
+
+//0x3F212C SnowManRacer
+
+//0x38125C CapSlot NPC
+
+
 
 HOOK_DEFINE_TRAMPOLINE(ControlHook) {
     static void Callback(StageScene* scene) {
@@ -423,7 +386,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     exl::hook::Initialize();
 
     //R_ABORT_UNLESS(Logger::instance().init("yotoutlemondecpl", 3080).value);
-    Logger::instance().init("192.168.1.69", 3080);
+    //Logger::instance().init("192.168.1.69", 3080);
 
     runCodePatches();
 
@@ -449,8 +412,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     RailMoveMapPartsInitSpeedHook::InstallAtSymbol("_ZN2al16RailMoveMapParts4initERKNS_13ActorInitInfoE");
     RailMoveMapPartsControlRotationHook::InstallAtSymbol("_ZN2al16RailMoveMapParts7controlEv");
     initPlayerHook::InstallAtSymbol("_ZN19PlayerActorHakoniwa10initPlayerERKN2al13ActorInitInfoERK14PlayerInitInfo");
-
-    installQmSaveHooks();
+    kuriboArchiveInitHook::InstallAtSymbol("_ZN2al24initActorWithArchiveNameEPNS_9LiveActorERKNS_13ActorInitInfoERKN4sead14SafeStringBaseIcEEPKc");
 
     patch::CodePatcher p(0x4BD0C0);
     p.WriteInst(inst::Movz(reg::X0, 0x130));

@@ -74,7 +74,7 @@ HOOK_DEFINE_TRAMPOLINE(LiveActorMovement) {
     static void Callback(al::LiveActor* actor) {
         Orig(actor);
         if (!actor->mFlags->isDead && actor->mPoseKeeper && actor->mPoseKeeper->getGravityPtr()) {
-            TVec3f tgravity;
+            TVec3f tgravity = {0, 0, 0};
             GravityInfo info;
             LiveActor lactor = LiveActor(*actor);
 
@@ -86,7 +86,7 @@ HOOK_DEFINE_TRAMPOLINE(LiveActorMovement) {
             }
             gravity.normalize();
             Logger::log("Gravity to set on %s: %.02f %.02f %.02f\n", typeid(*actor).name(), gravity.x, gravity.y, gravity.z);
-
+            
             al::ActorPoseKeeperBase* pose = actor->mPoseKeeper;
             if(pose && pose->getGravityPtr())
                 *pose->getGravityPtr() = gravity;

@@ -53,16 +53,19 @@ public:
     void concat(const TPos3f& other1, const TPos3f& other2) {
         this->a = (other1 * other2).a;
     }
+
     void mult(const TVec3f& a1, TVec3f& a2) const {
 	a2.x = m[0][3] + a1.z*m[0][2] + a1.x*m[0][0] + a1.y*m[0][1];
 	a2.y = m[1][3] + a1.z*m[1][2] + a1.x*m[1][0] + a1.y*m[1][1];
 	a2.z = m[2][3] + a1.z*m[2][2] + a1.x*m[2][0] + a1.y*m[2][1];
     }
+
     void mult33(const TVec3f& src, TVec3f& dst) const {
-	dst.x = src.z*m[0][2] + src.y*m[0][0] + src.x*m[0][1];
-	dst.y = src.z*m[1][2] + src.y*m[1][0] + src.x*m[1][1];
-	dst.z = src.z*m[2][2] + src.y*m[2][0] + src.x*m[2][1];
+	dst.x = src.z*m[0][2] + src.x*m[0][0] + src.y*m[0][1];
+	dst.y = src.z*m[1][2] + src.x*m[1][0] + src.y*m[1][1];
+	dst.z = src.z*m[2][2] + src.x*m[2][0] + src.y*m[2][1];
     }
+
     void setInline(const TPos3f& other) {
         this->a = other.a;
     }

@@ -37,14 +37,14 @@ bool CubeGravity::calcOwnGravityVector(TVec3f *pDest, f32 *pScalar, const TVec3f
 	if(area < 0) return false;
 	TVec3f gravityForce;
 	float scalar;
-	Logger::log("calcOwnGravityVector area: %d\n", area);
+	//Logger::log("calcOwnGravityVector area: %d\n", area);
 	if (
 		!calcFaceGravity(rPosition, area, &gravityForce, &scalar)
 		&& !calcCornerGravity(rPosition, area, &gravityForce, &scalar)
 		&& !calcEdgeGravity(rPosition, area, &gravityForce, &scalar)
 	) return false;
 	
-	Logger::log("distance: %f\n", scalar);
+	//Logger::log("distance: %f\n", scalar);
 	if(!isInRangeDistance(scalar)) return false;
 
 	if(pDest != NULL)
@@ -52,7 +52,7 @@ bool CubeGravity::calcOwnGravityVector(TVec3f *pDest, f32 *pScalar, const TVec3f
 
 	if(pScalar != NULL)
 		*pScalar = scalar;
-	Logger::log("calcOwnGravityVector end\n");
+	//Logger::log("calcOwnGravityVector end\n");
 	return true;
 }
 
@@ -66,9 +66,9 @@ int CubeGravity::calcGravityArea(const TVec3f &rPosition) const { // Area as in 
 	int area; // Region of the cube
 	float xDirDistance = relativePosition.dot(dirX) / lenX, yDirDistance = relativePosition.dot(dirY) / lenY, zDirDistance = relativePosition.dot(dirZ) / lenZ;
 
-	Logger::log("xDirDistance: %f, yDirDistance: %f, zDirDistance: %f\n", xDirDistance, yDirDistance, zDirDistance);
+	//Logger::log("xDirDistance: %f, yDirDistance: %f, zDirDistance: %f\n", xDirDistance, yDirDistance, zDirDistance);
 	
-	Logger::log("LenX: %f, LenY: %f, LenZ: %f\n", lenX, lenY, lenZ);
+	//Logger::log("LenX: %f, LenY: %f, LenZ: %f\n", lenX, lenY, lenZ);
 
 	if(xDirDistance < -lenX) {
 		if((mActiveFaces & 2) != 2) return -1;
@@ -131,9 +131,9 @@ bool CubeGravity::calcFaceGravity(const TVec3f &rPosition, s32 area, TVec3f *pDe
 			break;
 		case 16:
 			mPosition.getYDir(antiFaceDir);
-			Logger::log("antiFaceDir: %.02f %.02f %.02f\n", antiFaceDir.x, antiFaceDir.y, antiFaceDir.z);
+			//Logger::log("antiFaceDir: %.02f %.02f %.02f\n", antiFaceDir.x, antiFaceDir.y, antiFaceDir.z);
 			JGeometry::negateInternal(&antiFaceDir.x, &antiFaceDir.x);
-			Logger::log("antiFaceDir(neg): %.02f %.02f %.02f\n", antiFaceDir.x, antiFaceDir.y, antiFaceDir.z);
+			//Logger::log("antiFaceDir(neg): %.02f %.02f %.02f\n", antiFaceDir.x, antiFaceDir.y, antiFaceDir.z);
 			break;
 		case 22:
 			mPosition.getZDir(antiFaceDir);
