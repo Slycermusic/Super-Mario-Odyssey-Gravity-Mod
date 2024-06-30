@@ -14,7 +14,6 @@
 class GravityCreator {
 public:
 	GravityCreator();
-	virtual ~GravityCreator();
 
 	virtual PlanetGravity* getGravity() = 0;
 	virtual PlanetGravity* createInstance() = 0;

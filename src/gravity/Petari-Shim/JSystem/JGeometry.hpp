@@ -1,6 +1,7 @@
 #pragma once
 
 #include <math/seadMatrix.h>
+#include "JMath.hpp"
 
 typedef float f32;
 typedef int s32;
@@ -31,6 +32,7 @@ public:
     void scaleInline(f32 scale) { this->e = (*this * scale).e; }
     void negateInline(const sead::Vector3f& other) { this->e = (-other).e; }
     void subInline(const sead::Vector3f& a1, const sead::Vector3f& a2) { this->e = (a1-a2).e; }
+    void subInline(const sead::Vector3f& a1) { this->e = (sead::Vector3f(*this)-a1).e; }
     void addInline(const sead::Vector3f& a1) { this->e = (sead::Vector3f(*this)+a1).e; }
     const TVec3f* toVec() const { return this; }
     TVec3f* toVec() { return this; }
@@ -38,11 +40,71 @@ public:
     TVec3f* toCVec() { return this; }
     const sead::Vector3f* toSeadVec() const { return this; }
     sead::Vector3f* toSeadVec() { return this; }
+
+    inline void rejection(const TVec3f &rVec, const TVec3f &rNormal) {
+        JMAVECScaleAdd(rNormal.toCVec(), rVec.toCVec(), toVec(), -rNormal.dot(rVec));
+    }
+    inline TVec3f multInline2(f32 scalar) const {
+        TVec3f f(*this);
+        f.scaleInline(scalar);
+        return f;
+    }
+    inline TVec3f negateInline_2() const {
+        TVec3f ret;
+        ret.negateInline(*this);
+        return ret;
+    }
+    inline TVec3f _madd(const TVec3f &v) const {
+        TVec3f ret(*this);
+        ret.addInline(v);
+        return ret;
+    }
+    inline TVec3f madd(f32 scale, const TVec3f &v) const {
+        return _madd(v * scale);
+    }
+    inline f32 squareDistancePS(const TVec3f &rVec1) const {
+        TVec3f v = *this;
+        v.subInline(rVec1);
+        return v.squared();
+    }
 };
 typedef TVec3f Vec;
 
 #define VECMag(x) (x)->length()
 #define VECNormalize(x, y) (y)->normalize(*(x))
+
+class TRot3f : public sead::Matrix34f {
+public:
+    void identity() { makeIdentity(); }
+    void mult(const TVec3f& a1, TVec3f& a2) const {
+	a2.x = m[0][3] + a1.z*m[0][2] + a1.x*m[0][0] + a1.y*m[0][1];
+	a2.y = m[1][3] + a1.z*m[1][2] + a1.x*m[1][0] + a1.y*m[1][1];
+	a2.z = m[2][3] + a1.z*m[2][2] + a1.x*m[2][0] + a1.y*m[2][1];
+    }
+    inline f32 yy(f32 y) {
+        return y * y;
+    }
+    void setRotate(const TVec3f &mLocalDirection, f32 fr1e) {
+        TVec3f v;
+        v.set(mLocalDirection);
+        VECMag(v.toCVec());
+        VECNormalize(v.toCVec(), v.toVec());
+        f32 fr1ey = sin(fr1e), fr1ex = cos(fr1e);
+        f32 x, y, z;
+        y = v.y;
+        x = v.x;
+        z = v.z;
+        m[0][0] = fr1ex + (1.0f - fr1ex) * yy(x);
+        m[0][1] = (1.0f - fr1ex) * x * y - fr1ey * z;
+        m[0][2] = (1.0f - fr1ex) * x * z + fr1ey * y;
+        m[1][0] = (1.0f - fr1ex) * x * y + fr1ey * z;
+        m[1][1] = fr1ex + (1.0f - fr1ex) * yy(y);
+        m[1][2] = (1.0f - fr1ex) * y * z - fr1ey * x;
+        m[2][0] = (1.0f - fr1ex) * x * z - fr1ey * y;
+        m[2][1] = (1.0f - fr1ex) * y * z + fr1ey * x;
+        m[2][2] = fr1ex + (1.0f - fr1ex) * yy(z);
+    }
+};
 
 class TPos3f : public sead::Matrix34f {
 public:

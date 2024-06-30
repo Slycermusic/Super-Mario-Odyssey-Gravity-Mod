@@ -1,7 +1,4 @@
 #include "Game/Gravity.hpp"
-#include "Game/Util/MathUtil.hpp"
-
-#include "logger/Logger.hpp"
 
 PlanetGravityManager::PlanetGravityManager(const char *pName) : NameObj(pName) {
 	mNumGravities = 0;
@@ -27,8 +24,6 @@ bool PlanetGravityManager::calcTotalGravityVector(TVec3f *pGravity, GravityInfo 
 	f32 largestScalar = -1.0f;
 	s32 largestPriority = -1;
 
-	Logger::log("Got %d gravities\n", mNumGravities);
-
 	while (pGravities != &mGravities[mNumGravities]) {
 		// Is gravity valid/active?
 		bool validGravity = false;
@@ -51,7 +46,7 @@ bool PlanetGravityManager::calcTotalGravityVector(TVec3f *pGravity, GravityInfo 
 
 			if ((*pGravities)->calcGravity(&gravityVec, rPosition)) {
 				bool storeInfo = false;
-				f32 scalar = VECMag(reinterpret_cast<const Vec*>(&gravityVec));
+				f32 scalar = VECMag(gravityVec.toCVec());
 
 				// If same priority, add gravity vector to total result
 				if (priority == largestPriority) {

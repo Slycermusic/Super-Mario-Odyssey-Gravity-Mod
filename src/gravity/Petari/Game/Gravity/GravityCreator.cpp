@@ -35,8 +35,6 @@ PlanetGravity* GravityCreator::createFromJMap(const JMapInfoIter &rIter) {
 	return instance;
 }
 
-GravityCreator::~GravityCreator() {}
-
 PlanetGravity* CubeGravityCreator::createInstance() {
 	mGravityInstance = new CubeGravity();
 	return mGravityInstance;

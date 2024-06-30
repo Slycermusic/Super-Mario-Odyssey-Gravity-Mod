@@ -1,8 +1,6 @@
 #include "Game/Gravity.hpp"
 #include "Game/Util.hpp"
 
-#include "logger/Logger.hpp"
-
 PlanetGravity::PlanetGravity() {
 	mRange = -1.0f;
 	mDistant = 0.0f;
@@ -78,7 +76,6 @@ bool PlanetGravity::isInRangeDistance(f32 radius) const {
 	}
 	else {
 		f32 distance = range + mDistant;
-		Logger::log("%f %f\n", radius, distance);
 		return radius < distance;
 	}
 }
@@ -87,7 +84,7 @@ bool PlanetGravity::calcGravityFromMassPosition(TVec3f *pDirection, f32 *pScalar
 	TVec3f direction;
 	f32 scalar;
 
-	direction.subInline(rPosition, rMassPosition);
+	direction.subInline(rMassPosition, rPosition);
 	MR::separateScalarAndDirection(&scalar, &direction, direction);
 
 	if (!isInRangeDistance(scalar))
