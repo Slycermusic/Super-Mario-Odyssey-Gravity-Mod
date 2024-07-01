@@ -74,10 +74,16 @@ inline f32 calcPerpendicFootToLineInside(TVec3f *pOut, const TVec3f &rPoint, con
     return pointPos;
 }
 
-inline void makeAxisVerticalZX(TVec3f *, const TVec3f &) {
-    Logger::log("MR::makeAxisVerticalZX not implemented\n");
-    // instant crash
-    *(volatile int*)0;
+inline void makeAxisVerticalZX(TVec3f * out, const TVec3f & axis) {
+    TVec3f ortho1, ortho2;
+    ortho1.rejection(axis, TVec3f(1, 0, 0));
+    ortho2.rejection(axis, TVec3f(0, 0, 1));
+    if(ortho1.squared() < 0.00001f) {
+        *out = ortho2;
+    } else {
+        *out = ortho1;
+    }
+    normalize(out);
 }
 
 }
